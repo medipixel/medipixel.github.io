@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Posts on Medipixel</title>
+    <link>/post/</link>
+    <description>Recent content in Posts on Medipixel</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Wed, 01 May 2019 22:22:17 +0900</lastBuildDate>
+    
+	<atom:link href="/post/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Anchor_notebook</title>
+      <link>/post/anchor_notebook/</link>
+      <pubDate>Wed, 01 May 2019 22:22:17 +0900</pubDate>
+      
+      <guid>/post/anchor_notebook/</guid>
+      <description>import torch import numpy as np import cv2 import matplotlib.pyplot as plt import matplotlib.ticker as plticker  def gen_base_anchors(base_size, ratios, scales): w = base_size h = base_size x_ctr = 0.5 * (w - 1) y_ctr = 0.5 * (h - 1) h_ratios = torch.sqrt(ratios) w_ratios = 1 / h_ratios ws = (w * w_ratios[:, None] * scales[None, :]).view(-1) hs = (h * h_ratios[:, None] * scales[None, :]).view(-1) base_anchors = torch.stack( [ x_ctr - 0.</description>
+    </item>
+    
+    <item>
+      <title>Anchor</title>
+      <link>/post/anchor/</link>
+      <pubDate>Wed, 01 May 2019 21:50:26 +0900</pubDate>
+      
+      <guid>/post/anchor/</guid>
+      <description>Anchor SOTA 성능을 내는 많은 detector는 anchor를 활용해서 bbox coordinate을 학습합니다. anchor가 무엇인지, 어떻게 one-stage, two-stage detector에서 사용되는지 알아보겠습니다.
+What is Anchor?  Firstly suggested paper: Faster-RCNN? Papers using anchors  one-stage  RetinaNet  two-stage  Faster-RCNN   Purpose:  image에 object가 있는 영역을 box로 예측해야 하는데, 예측을 용이하게 해주기 위해서 image로부터 얻은 feature map의 위치마다 default로 box를 여러 개를 그려서(anchor) 이 anchor들의 크기를 기준으로 차이에 대해서 학습하게 합니다.</description>
+    </item>
+    
+  </channel>
+</rss>

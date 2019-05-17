@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Whi Kwon on Medipixel</title>
+    <link>/authors/whi-kwon/</link>
+    <description>Recent content in Whi Kwon on Medipixel</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Wed, 01 May 2019 22:22:17 +0900</lastBuildDate>
+    
+	<atom:link href="/authors/whi-kwon/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Anchor_notebook</title>
+      <link>/post/anchor_notebook/</link>
+      <pubDate>Wed, 01 May 2019 22:22:17 +0900</pubDate>
+      
+      <guid>/post/anchor_notebook/</guid>
+      <description>import torch import numpy as np import cv2 import matplotlib.pyplot as plt import matplotlib.ticker as plticker  def gen_base_anchors(base_size, ratios, scales): w = base_size h = base_size x_ctr = 0.5 * (w - 1) y_ctr = 0.5 * (h - 1) h_ratios = torch.sqrt(ratios) w_ratios = 1 / h_ratios ws = (w * w_ratios[:, None] * scales[None, :]).view(-1) hs = (h * h_ratios[:, None] * scales[None, :]).view(-1) base_anchors = torch.stack( [ x_ctr - 0.</description>
+    </item>
+    
+    <item>
+      <title></title>
+      <link>/author/whi-kwon/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/author/whi-kwon/</guid>
+      <description>Nelson Bighetti is a professor of artificial intelligence at the Stanford AI Lab. His research interests include distributed robotics, mobile computing and programmable matter. He leads the Robotic Neurobiology group, which develops self-reconfiguring robots, systems of self-organizing robots, and mobile sensor networks.
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed neque elit, tristique placerat feugiat ac, facilisis vitae arcu. Proin eget egestas augue. Praesent ut sem nec arcu pellentesque aliquet.</description>
+    </item>
+    
+    <item>
+      <title>Posts</title>
+      <link>/post/</link>
+      <pubDate>Wed, 01 May 2019 22:22:17 +0900</pubDate>
+      
+      <guid>/post/</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>
