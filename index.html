@@ -88,7 +88,7 @@
   
   
   
-  <link rel="stylesheet" href="/css/academic.min.366bfc737a46c822efbde1ecf11d2efc.css">
+  <link rel="stylesheet" href="/css/academic.min.31b992816e556de58b213aeabf8f3818.css">
 
   
 
@@ -430,7 +430,7 @@
   
   <span class="middot-divider"></span>
   <span class="article-reading-time">
-    4 min read
+    3 min read
   </span>
   
 
@@ -451,96 +451,12 @@
   
 
   <h3 class="article-title mb-1 mt-3" itemprop="name">
-    <a href="/post/anchor_notebook/" itemprop="url">Anchor_notebook</a>
+    <a href="/post/histogram/" itemprop="url">2.2 Histogram</a>
   </h3>
 
   
   <div class="article-style" itemprop="articleBody">
-    import torch import numpy as np import cv2 import matplotlib.pyplot as plt import matplotlib.ticker as plticker  def gen_base_anchors(base_size, ratios, scales): w = base_size h = base_size x_ctr = 0.5 * (w - 1) y_ctr = 0.5 * (h - 1) h_ratios = torch.sqrt(ratios) w_ratios = 1 / h_ratios ws = (w * w_ratios[:, None] * scales[None, :]).view(-1) hs = (h * h_ratios[:, None] * scales[None, :]).view(-1) base_anchors = torch.stack( [ x_ctr - 0.
-  </div>
-  
-
-  
-
-</div>
-
-      
-    
-      
-        
-
-
-
-
-
-
-  
-
-
-
-
-
-  
-
-
-<div class="card-simple" itemscope itemtype="http://schema.org/BlogPosting">
-
-  
-    
-
-
-
-<meta content="2019-05-01 21:50:26 &#43;0900 KST" itemprop="datePublished">
-<meta content="2019-05-01 21:50:26 &#43;0900 KST" itemprop="dateModified">
-
-<div class="article-metadata">
-
-  
-  
-
-  
-  <span class="article-date">
-    
-    
-      
-    
-    <time>May 1, 2019</time>
-  </span>
-  
-
-  
-
-  
-  <span class="middot-divider"></span>
-  <span class="article-reading-time">
-    4 min read
-  </span>
-  
-
-  
-  
-
-  
-  
-
-  
-
-</div>
-
-  
-
-  
-  
-  
-
-  <h3 class="article-title mb-1 mt-3" itemprop="name">
-    <a href="/post/anchor/" itemprop="url">Anchor</a>
-  </h3>
-
-  
-  <div class="article-style" itemprop="articleBody">
-    Anchor SOTA 성능을 내는 많은 detector는 anchor를 활용해서 bbox coordinate을 학습합니다. anchor가 무엇인지, 어떻게 one-stage, two-stage detector에서 사용되는지 알아보겠습니다.
-What is Anchor?  Firstly suggested paper: Faster-RCNN? Papers using anchors  one-stage  RetinaNet  two-stage  Faster-RCNN   Purpose:  image에 object가 있는 영역을 box로 예측해야 하는데, 예측을 용이하게 해주기 위해서 image로부터 얻은 feature map의 위치마다 default로 box를 여러 개를 그려서(anchor) 이 anchor들의 크기를 기준으로 차이에 대해서 학습하게 합니다.
+    Import Libraries import os import sys import math from platform import python_version import cv2 import matplotlib import matplotlib.pyplot as plt import numpy as np print(&quot;Python version : &quot;, python_version()) print(&quot;Opencv version : &quot;, cv2.__version__) matplotlib.rcParams['figure.figsize'] = (4.0, 4.0)  Python version : 3.6.6 Opencv version : 3.4.3  Data load sample_image_path = '../image/' sample_image = 'lena_gray.jpg' img = cv2.imread(sample_image_path + sample_image, cv2.IMREAD_GRAYSCALE)  Data description  본 예제에서 사용할 데이터는 아래와 같습니다.
   </div>
   
 
@@ -605,7 +521,7 @@ What is Anchor?  Firstly suggested paper: Faster-RCNN? Papers using anchors  one
       
       <li>
         <i class="fa-li fas fa-envelope fa-2x" aria-hidden="true"></i>
-        <span id="person-email" itemprop="email"><a href="mailto:young.kim@medipixel.io">young.kim@medipixel.io</a></span>
+        <span id="person-email" itemprop="email"><a href="mailto:contact@medipixel.io">contact@medipixel.io</a></span>
       </li>
       
 
@@ -626,8 +542,7 @@ What is Anchor?  Firstly suggested paper: Faster-RCNN? Papers using anchors  one
       
       <li>
         <i class="fa-li fas fa-clock fa-2x" aria-hidden="true"></i>
-        <span>Monday 10:00 to 13:00<br>
-                  Wednesday 09:00 to 10:00</span>
+        <span>09:00 to 18:00</span>
       </li>
       
 
