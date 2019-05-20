@@ -23,7 +23,7 @@
   
     
   
-  <meta name="description" content="Import Libraries import os import sys import math from platform import python_version import cv2 import matplotlib import matplotlib.pyplot as plt import numpy as np print(&quot;Python version : &quot;, python_version()) print(&quot;Opencv version : &quot;, cv2.__version__) matplotlib.rcParams[&#39;figure.figsize&#39;] = (4.0, 4.0)  Python version : 3.6.6 Opencv version : 3.4.3  Data load sample_image_path = &#39;../image/&#39; sample_image = &#39;lena_gray.jpg&#39; img = cv2.imread(sample_image_path &#43; sample_image, cv2.IMREAD_GRAYSCALE)  Data description  본 예제에서 사용할 데이터는 아래와 같습니다.">
+  <meta name="description" content="Histogram using OpenCV">
 
   
   <link rel="alternate" hreflang="en-us" href="/post/histogram/">
@@ -87,7 +87,7 @@
   
   
   
-  <link rel="stylesheet" href="/css/academic.min.31b992816e556de58b213aeabf8f3818.css">
+  <link rel="stylesheet" href="/css/academic.min.6a8804fae7a305c3da7b642ff90ede5e.css">
 
   
 
@@ -115,7 +115,7 @@
   <meta property="og:site_name" content="Medipixel">
   <meta property="og:url" content="/post/histogram/">
   <meta property="og:title" content="2.2 Histogram | Medipixel">
-  <meta property="og:description" content="Import Libraries import os import sys import math from platform import python_version import cv2 import matplotlib import matplotlib.pyplot as plt import numpy as np print(&quot;Python version : &quot;, python_version()) print(&quot;Opencv version : &quot;, cv2.__version__) matplotlib.rcParams[&#39;figure.figsize&#39;] = (4.0, 4.0)  Python version : 3.6.6 Opencv version : 3.4.3  Data load sample_image_path = &#39;../image/&#39; sample_image = &#39;lena_gray.jpg&#39; img = cv2.imread(sample_image_path &#43; sample_image, cv2.IMREAD_GRAYSCALE)  Data description  본 예제에서 사용할 데이터는 아래와 같습니다."><meta property="og:image" content="/img/icon-192.png">
+  <meta property="og:description" content="Histogram using OpenCV"><meta property="og:image" content="/img/icon-192.png">
   <meta property="og:locale" content="en-us">
   
   <meta property="article:published_time" content="2019-05-01T22:22:17&#43;09:00">
@@ -210,6 +210,62 @@
           <a class="nav-link " href="/#posts">
             
             <span>Posts</span>
+            
+          </a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+          
+            
+          
+        
+
+        
+        
+        
+        
+        
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="https://github.com/medipixel" target="_blank" rel="noopener">
+            
+            <span>GitHub</span>
+            
+          </a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+          
+            
+          
+        
+
+        
+        
+        
+        
+        
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="https://www.medipixel.io/" target="_blank" rel="noopener">
+            
+            <span>Site</span>
             
           </a>
         </li>
@@ -424,6 +480,8 @@
     <div class="article-style" itemprop="articleBody">
       
 
+<hr />
+
 <h2 id="import-libraries">Import Libraries</h2>
 
 <pre><code class="language-python">import os
@@ -446,12 +504,16 @@ matplotlib.rcParams['figure.figsize'] = (4.0, 4.0)
 Opencv version :  3.4.3
 </code></pre>
 
+<hr />
+
 <h2 id="data-load">Data load</h2>
 
 <pre><code class="language-python">sample_image_path = '../image/'
 sample_image = 'lena_gray.jpg'
 img = cv2.imread(sample_image_path + sample_image, cv2.IMREAD_GRAYSCALE)
 </code></pre>
+
+<hr />
 
 <h2 id="data-description">Data description</h2>
 
@@ -552,8 +614,8 @@ plt.show()
 <ul>
 <li>OpenCV를 이용하면 함수 호출을 통해 간단하게 Histogram을 구할 수 있습니다.</li>
 <li>numpy로 구한 Histogram과 비교해 보면, 두 결과물이 완전히 동일한 것을 알 수 있습니다.</li>
-<li>*&lsquo;cv2.calcHist()&rsquo;*를 수행하면 픽셀값 별 등장 횟수의 그래프를 얻고, 이를 normalize하여 최종적으로 Histogram을 얻게 됩니다.</li>
-<li>*&lsquo;cv2.calcHist()&rsquo;*의 자세한 사용법은 Opencv 공식 tutorial page를 통해 확인할 수 있습니다. <a href="https://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_imgproc/py_histograms/py_histogram_begins/py_histogram_begins.html#histogram-calculation-in-opencv" target="_blank">[2]</a>
+<li><strong>&lsquo;cv2.calcHist()&rsquo;</strong>를 수행하면 픽셀값 별 등장 횟수의 그래프를 얻고, 이를 normalize하여 최종적으로 Histogram을 얻게 됩니다.</li>
+<li><strong>&lsquo;cv2.calcHist()&rsquo;</strong>의 자세한 사용법은 Opencv 공식 tutorial page를 통해 확인할 수 있습니다. <a href="https://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_imgproc/py_histograms/py_histogram_begins/py_histogram_begins.html#histogram-calculation-in-opencv" target="_blank">[2]</a>
 &mdash;</li>
 </ul>
 
@@ -727,7 +789,7 @@ plt.show()
 	  
 	  <div class="media-body">
 	    <h5 class="card-title" itemprop="name"><a href="/authors/young-kim">YoungEon Kim</a></h5>
-	    <h6 class="card-subtitle">A.I Scientest</h6>
+	    <h6 class="card-subtitle">A.I Scientist</h6>
 	    <p class="card-text" itemprop="description">My research interests include distributed robotics, mobile computing and programmable matter.</p>
 	    <ul class="network-icon" aria-hidden="true">
 	      
@@ -740,10 +802,8 @@ plt.show()
 	      
 	      
 	      
-		
-	      
 	      <li>
-		<a itemprop="sameAs" href="/#contact" >
+		<a itemprop="sameAs" href="mailto:young.kim@medipixel.io" >
 		  <i class="fas fa-envelope"></i>
 		</a>
 	      </li>
@@ -762,21 +822,6 @@ plt.show()
 	      <li>
 		<a itemprop="sameAs" href="https://twitter.com/GeorgeCushen" target="_blank" rel="noopener">
 		  <i class="fab fa-twitter"></i>
-		</a>
-	      </li>
-	      
-	      
-	      
-	      
-	      
-	      
-	      
-	      
-		
-	      
-	      <li>
-		<a itemprop="sameAs" href="https://scholar.google.co.uk/citations?user=sIwtMXoAAAAJ" target="_blank" rel="noopener">
-		  <i class="ai ai-google-scholar"></i>
 		</a>
 	      </li>
 	      
@@ -817,8 +862,8 @@ plt.show()
 	  
 	  <div class="media-body">
 	    <h5 class="card-title" itemprop="name"><a href="/authors/whi-kwon">Whi Kwon</a></h5>
-	    <h6 class="card-subtitle">A.I Scientest</h6>
-	    <p class="card-text" itemprop="description">My research interests include distributed robotics, mobile computing and programmable matter.</p>
+	    <h6 class="card-subtitle">AI Researcher</h6>
+	    
 	    <ul class="network-icon" aria-hidden="true">
 	      
 	      
@@ -830,10 +875,8 @@ plt.show()
 	      
 	      
 	      
-		
-	      
 	      <li>
-		<a itemprop="sameAs" href="/#contact" >
+		<a itemprop="sameAs" href="mailto:whi.kwon@medipixel.io" >
 		  <i class="fas fa-envelope"></i>
 		</a>
 	      </li>
@@ -850,39 +893,7 @@ plt.show()
 		
 	      
 	      <li>
-		<a itemprop="sameAs" href="https://twitter.com/GeorgeCushen" target="_blank" rel="noopener">
-		  <i class="fab fa-twitter"></i>
-		</a>
-	      </li>
-	      
-	      
-	      
-	      
-	      
-	      
-	      
-	      
-		
-	      
-	      <li>
-		<a itemprop="sameAs" href="https://scholar.google.co.uk/citations?user=sIwtMXoAAAAJ" target="_blank" rel="noopener">
-		  <i class="ai ai-google-scholar"></i>
-		</a>
-	      </li>
-	      
-	      
-	      
-	      
-		
-	      
-	      
-	      
-	      
-	      
-		
-	      
-	      <li>
-		<a itemprop="sameAs" href="https://github.com/kye9216789" target="_blank" rel="noopener">
+		<a itemprop="sameAs" href="https://github.com/whikwon" target="_blank" rel="noopener">
 		  <i class="fab fa-github"></i>
 		</a>
 	      </li>

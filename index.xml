@@ -19,6 +19,8 @@
       <guid>/post/histogram/</guid>
       <description>
 
+&lt;hr /&gt;
+
 &lt;h2 id=&#34;import-libraries&#34;&gt;Import Libraries&lt;/h2&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;import os
@@ -41,12 +43,16 @@ matplotlib.rcParams[&#39;figure.figsize&#39;] = (4.0, 4.0)
 Opencv version :  3.4.3
 &lt;/code&gt;&lt;/pre&gt;
 
+&lt;hr /&gt;
+
 &lt;h2 id=&#34;data-load&#34;&gt;Data load&lt;/h2&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;sample_image_path = &#39;../image/&#39;
 sample_image = &#39;lena_gray.jpg&#39;
 img = cv2.imread(sample_image_path + sample_image, cv2.IMREAD_GRAYSCALE)
 &lt;/code&gt;&lt;/pre&gt;
+
+&lt;hr /&gt;
 
 &lt;h2 id=&#34;data-description&#34;&gt;Data description&lt;/h2&gt;
 
@@ -147,8 +153,8 @@ plt.show()
 &lt;ul&gt;
 &lt;li&gt;OpenCV를 이용하면 함수 호출을 통해 간단하게 Histogram을 구할 수 있습니다.&lt;/li&gt;
 &lt;li&gt;numpy로 구한 Histogram과 비교해 보면, 두 결과물이 완전히 동일한 것을 알 수 있습니다.&lt;/li&gt;
-&lt;li&gt;*&amp;lsquo;cv2.calcHist()&amp;rsquo;*를 수행하면 픽셀값 별 등장 횟수의 그래프를 얻고, 이를 normalize하여 최종적으로 Histogram을 얻게 됩니다.&lt;/li&gt;
-&lt;li&gt;*&amp;lsquo;cv2.calcHist()&amp;rsquo;*의 자세한 사용법은 Opencv 공식 tutorial page를 통해 확인할 수 있습니다. &lt;a href=&#34;https://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_imgproc/py_histograms/py_histogram_begins/py_histogram_begins.html#histogram-calculation-in-opencv&#34; target=&#34;_blank&#34;&gt;[2]&lt;/a&gt;
+&lt;li&gt;&lt;strong&gt;&amp;lsquo;cv2.calcHist()&amp;rsquo;&lt;/strong&gt;를 수행하면 픽셀값 별 등장 횟수의 그래프를 얻고, 이를 normalize하여 최종적으로 Histogram을 얻게 됩니다.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;&amp;lsquo;cv2.calcHist()&amp;rsquo;&lt;/strong&gt;의 자세한 사용법은 Opencv 공식 tutorial page를 통해 확인할 수 있습니다. &lt;a href=&#34;https://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_imgproc/py_histograms/py_histogram_begins/py_histogram_begins.html#histogram-calculation-in-opencv&#34; target=&#34;_blank&#34;&gt;[2]&lt;/a&gt;
 &amp;mdash;&lt;/li&gt;
 &lt;/ul&gt;
 
