@@ -21,21 +21,21 @@
     </item>
     
     <item>
-      <title>MMDetection - Anchor</title>
-      <link>/post/mmdet-anchor/</link>
-      <pubDate>Fri, 24 May 2019 20:38:00 +0900</pubDate>
-      
-      <guid>/post/mmdet-anchor/</guid>
-      <description>Anchor algorithm in MMDetection</description>
-    </item>
-    
-    <item>
       <title>2.2 Histogram</title>
       <link>/post/histogram/</link>
       <pubDate>Wed, 01 May 2019 22:22:17 +0900</pubDate>
       
       <guid>/post/histogram/</guid>
       <description>Histogram using OpenCV</description>
+    </item>
+    
+    <item>
+      <title>2.3. Image Thresholding</title>
+      <link>/post/image-thresholding/</link>
+      <pubDate>Wed, 01 May 2019 22:22:17 +0900</pubDate>
+      
+      <guid>/post/image-thresholding/</guid>
+      <description>Image threshold using OpenCV</description>
     </item>
     
     <item>

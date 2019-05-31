@@ -414,933 +414,6 @@ $$ t_x = (x - x_a) / w_a,\ t_y = (y - y_a) / h_a, &lt;br /&gt;
     </item>
     
     <item>
-      <title>MMDetection - Anchor</title>
-      <link>/post/mmdet-anchor/</link>
-      <pubDate>Fri, 24 May 2019 20:38:00 +0900</pubDate>
-      
-      <guid>/post/mmdet-anchor/</guid>
-      <description>
-
-&lt;h2 id=&#34;introduction&#34;&gt;Introduction&lt;/h2&gt;
-
-&lt;p&gt;SOTA 성능을 내는 많은 detector에서 anchor를 활용해서 bbox coordinate을 학습합니다. anchor가 무엇인지, 어떻게 one-stage, two-stage detector에서 사용되는지 살펴보겠습니다.&lt;/p&gt;
-
-&lt;h2 id=&#34;import-libraries&#34;&gt;Import Libraries&lt;/h2&gt;
-
-&lt;ul&gt;
-&lt;li&gt;mmdet version: &lt;a href=&#34;https://github.com/open-mmlab/mmdetection/tree/v0.6rc0&#34; target=&#34;_blank&#34;&gt;https://github.com/open-mmlab/mmdetection/tree/v0.6rc0&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;import cv2
-import numpy as np
-import matplotlib.pyplot as plt
-import matplotlib.ticker as plticker
-from matplotlib.lines import Line2D
-from matplotlib.patches import Patch
-import torch
-import torch.nn.functional as F
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h2 id=&#34;anchor-generate&#34;&gt;Anchor Generate&lt;/h2&gt;
-
-&lt;ul&gt;
-&lt;li&gt;code from: &lt;a href=&#34;https://github.com/open-mmlab/mmdetection/blob/v0.6rc0/mmdet/core/anchor/anchor_generator.py&#34; target=&#34;_blank&#34;&gt;https://github.com/open-mmlab/mmdetection/blob/v0.6rc0/mmdet/core/anchor/anchor_generator.py&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;def meshgrid(x, y):
-    &amp;quot;&amp;quot;&amp;quot;
-    Args:
-        x ():
-        y ():
-    &amp;quot;&amp;quot;&amp;quot;
-    xx = x.repeat(len(y))
-    yy = y.view(-1, 1).repeat(1, len(x)).view(-1)
-    return xx, yy
-
-def gen_base_anchors(base_size, ratios, scales):
-    w = base_size
-    h = base_size
-
-    x_ctr = 0.5 * (w - 1)
-    y_ctr = 0.5 * (h - 1)
-
-    h_ratios = torch.sqrt(ratios)
-    w_ratios = 1 / h_ratios
-    ws = (w * w_ratios[:, None] * scales[None, :]).view(-1)
-    hs = (h * h_ratios[:, None] * scales[None, :]).view(-1)
-
-    base_anchors = torch.stack(
-        [
-            x_ctr - 0.5 * (ws - 1), y_ctr - 0.5 * (hs - 1),
-            x_ctr + 0.5 * (ws - 1), y_ctr + 0.5 * (hs - 1)
-        ],
-        dim=-1).round()
-    return base_anchors
-
-def grid_anchors(base_anchors, featmap_size, stride=16, device=&#39;cuda&#39;):
-    &amp;quot;&amp;quot;&amp;quot;
-    Args:
-        base_anchors ():
-        featmap_size ():
-        stride (int):
-        device (str)
-    &amp;quot;&amp;quot;&amp;quot;
-    base_anchors = base_anchors.to(device)
-
-    feat_h, feat_w = featmap_size
-    shift_x = torch.arange(0, feat_w, device=device) * stride
-    shift_y = torch.arange(0, feat_h, device=device) * stride
-    shift_xx, shift_yy = meshgrid(shift_x, shift_y)
-    shifts = torch.stack([shift_xx, shift_yy, shift_xx, shift_yy], dim=-1)
-    shifts = shifts.type_as(base_anchors)
-
-    all_anchors = base_anchors[None, :, :] + shifts[:, None, :]
-    all_anchors = all_anchors.view(-1, 4)
-    return all_anchors, shifts
-
-def valid_flags(featmap_size, valid_size, num_base_anchors, device=&#39;cuda&#39;):
-    &amp;quot;&amp;quot;&amp;quot;
-    Args:
-        featmap_size ():
-        valid_size ():
-        num_base_anchors ():
-        device (str): &#39;cuda&#39; or &#39;cpu&#39;
-    &amp;quot;&amp;quot;&amp;quot;
-    feat_h, feat_w = featmap_size
-    valid_h, valid_w = valid_size
-    assert valid_h &amp;lt;= feat_h and valid_w &amp;lt;= feat_w
-    valid_x = torch.zeros(feat_w, dtype=torch.uint8, device=device)
-    valid_y = torch.zeros(feat_h, dtype=torch.uint8, device=device)
-    valid_x[:valid_w] = 1
-    valid_y[:valid_h] = 1
-    valid_xx, valid_yy = meshgrid(valid_x, valid_y)
-    valid = valid_xx &amp;amp; valid_yy
-    valid = valid[:, None].expand(
-        valid.size(0), num_base_anchors).contiguous().view(-1)
-    return valid
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;ul&gt;
-&lt;li&gt;code from: &lt;a href=&#34;https://github.com/open-mmlab/mmdetection/blob/f2cfa86b4294e2593429adccce64bfd049a27651/mmdet/models/anchor_heads/anchor_head.py#L89-L126&#34; target=&#34;_blank&#34;&gt;https://github.com/open-mmlab/mmdetection/blob/f2cfa86b4294e2593429adccce64bfd049a27651/mmdet/models/anchor_heads/anchor_head.py#L89-L126&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;def get_anchors(image_shape, featmap_size, anchor_stride, scales, ratios, device=&#39;cuda&#39;):
-    &amp;quot;&amp;quot;&amp;quot;
-    Args:
-        image_shape (list): [w, h, 3]
-        featmap_size (list): [f_w, f_h]
-        anchor_stride (int): normally w // f_w or h // f_h
-        scales (torch.Tensor): scales of anchor
-        ratios (torch.Tensor): ratios of anchor
-        device (str): &#39;cuda&#39; or &#39;cpu&#39;
-
-    Returns:
-        anchors ():
-        flags ():
-    &amp;quot;&amp;quot;&amp;quot;
-    num_base_anchors = len(scales) * len(ratios)
-    base_anchors = gen_base_anchors(base_size, ratios, scales)
-    anchors, shifts = grid_anchors(base_anchors, featmap_size, anchor_stride, device)
-
-    feat_h, feat_w = featmap_size
-    h, w = image_shape[: 2]
-    valid_feat_h = min(int(np.ceil(h / anchor_stride)), feat_h)
-    valid_feat_w = min(int(np.ceil(w / anchor_stride)), feat_w)
-    valid_size = [valid_feat_h, valid_feat_w]
-    flags = valid_flags(featmap_size, valid_size, num_base_anchors, device)
-    return anchors, flags
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h2 id=&#34;anchor-gt-assign&#34;&gt;Anchor -&amp;gt; gt assign&lt;/h2&gt;
-
-&lt;ul&gt;
-&lt;li&gt;code from: &lt;a href=&#34;https://github.com/open-mmlab/mmdetection/blob/f2cfa86b4294e2593429adccce64bfd049a27651/mmdet/core/bbox/assigners/max_iou_assigner.py#L87-L146&#34; target=&#34;_blank&#34;&gt;https://github.com/open-mmlab/mmdetection/blob/f2cfa86b4294e2593429adccce64bfd049a27651/mmdet/core/bbox/assigners/max_iou_assigner.py#L87-L146&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;def assign_wrt_overlaps(overlaps,
-                        pos_iou_thr=0.5,
-                        neg_iou_thr=0.4,
-                        min_pos_iou=0.0):
-    &amp;quot;&amp;quot;&amp;quot;Assign w.r.t. the overlaps of bboxes with gts.
-
-    Args:
-        overlaps (torcch.Tensor): Overlaps between k gt_bboxes and n bboxes,
-            shape(k, n).
-        gt_labels (torch.Tensor, optional): Labels of k gt_bboxes, shape (k, ).
-
-    Returns:
-        :obj:`AssignResult`: The assign result.
-    &amp;quot;&amp;quot;&amp;quot;
-    if overlaps.numel() == 0:
-        raise ValueError(&#39;No gt or proposals&#39;)
-
-    num_gts, num_bboxes = overlaps.size(0), overlaps.size(1)
-
-    # 1. assign -1 by default
-    assigned_gt_inds = overlaps.new_full(
-        (num_bboxes, ), -1, dtype=torch.long)
-
-    # for each anchor, which gt best overlaps with it
-    # for each anchor, the max iou of all gts
-    max_overlaps, argmax_overlaps = overlaps.max(dim=0)
-    # for each gt, which anchor best overlaps with it
-    # for each gt, the max iou of all proposals
-    gt_max_overlaps, gt_argmax_overlaps = overlaps.max(dim=1)
-
-    # 2. assign negative: below
-    if isinstance(neg_iou_thr, float):
-        assigned_gt_inds[(max_overlaps &amp;gt;= 0)
-                         &amp;amp; (max_overlaps &amp;lt; neg_iou_thr)] = 0
-    elif isinstance(neg_iou_thr, tuple):
-        assert len(neg_iou_thr) == 2
-        assigned_gt_inds[(max_overlaps &amp;gt;= neg_iou_thr[0])
-                         &amp;amp; (max_overlaps &amp;lt; neg_iou_thr[1])] = 0
-
-    # 3. assign positive: above positive IoU threshold
-    pos_inds = max_overlaps &amp;gt;= pos_iou_thr
-    assigned_gt_inds[pos_inds] = argmax_overlaps[pos_inds] + 1
-
-    # 4. assign fg: for each gt, proposals with highest IoU
-    for i in range(num_gts):
-        if gt_max_overlaps[i] &amp;gt;= min_pos_iou:
-            max_iou_inds = overlaps[i, :] == gt_max_overlaps[i]
-            assigned_gt_inds[max_iou_inds] = i + 1
-
-    return num_gts, assigned_gt_inds, max_overlaps
-
-def bbox_overlaps(bboxes1, bboxes2):
-    &amp;quot;&amp;quot;&amp;quot;Calculate overlap between two set of bboxes.
-
-    If ``is_aligned`` is ``False``, then calculate the ious between each bbox
-    of bboxes1 and bboxes2, otherwise the ious between each aligned pair of
-    bboxes1 and bboxes2.
-
-    Args:
-        bboxes1 (torch.Tensor): shape (m, 4)
-        bboxes2 (torch.Tensor): shape (n, 4), if is_aligned is ``True``, then m and n
-            must be equal.
-        mode (str): &amp;quot;iou&amp;quot; (intersection over union) or iof (intersection over
-            foreground).
-
-    Returns:
-        ious(Tensor): shape (m, n) if is_aligned == False else shape (m, 1)
-    &amp;quot;&amp;quot;&amp;quot;
-
-    rows = bboxes1.size(0)
-    cols = bboxes2.size(0)
-
-    if rows * cols == 0:
-        return bboxes1.new(rows, 1) if is_aligned else bboxes1.new(rows, cols)
-
-    lt = torch.max(bboxes1[:, None, :2], bboxes2[:, :2])  # [rows, cols, 2]
-    rb = torch.min(bboxes1[:, None, 2:], bboxes2[:, 2:])  # [rows, cols, 2]
-
-    wh = (rb - lt + 1).clamp(min=0)  # [rows, cols, 2]
-    overlap = wh[:, :, 0] * wh[:, :, 1]
-    area1 = (bboxes1[:, 2] - bboxes1[:, 0] + 1) * (
-        bboxes1[:, 3] - bboxes1[:, 1] + 1)
-
-    area2 = (bboxes2[:, 2] - bboxes2[:, 0] + 1) * (
-        bboxes2[:, 3] - bboxes2[:, 1] + 1)
-    ious = overlap / (area1[:, None] + area2 - overlap)
-
-    return ious
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h2 id=&#34;delta-bbox-conversion&#34;&gt;delta-bbox conversion&lt;/h2&gt;
-
-&lt;ul&gt;
-&lt;li&gt;code from: &lt;a href=&#34;https://github.com/open-mmlab/mmdetection/blob/f2cfa86b4294e2593429adccce64bfd049a27651/mmdet/core/bbox/transforms.py#L6-L68&#34; target=&#34;_blank&#34;&gt;https://github.com/open-mmlab/mmdetection/blob/f2cfa86b4294e2593429adccce64bfd049a27651/mmdet/core/bbox/transforms.py#L6-L68&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;def bbox2delta(proposals, gt, means=[0, 0, 0, 0], stds=[1, 1, 1, 1]):
-    &amp;quot;&amp;quot;&amp;quot;convert bbox to delta
-
-    Args:
-        proposals (torch.Tensor): shape (m, 4)
-        gt (torch.Tensor): shape (n, 4)
-        means (list): for normalization, default [0, 0, 0, 0]
-        stds (list): for normalization, default [1, 1, 1, 1]
-
-    Returns:
-        deltas (torch.Tensor): shape (m, 4)
-    &amp;quot;&amp;quot;&amp;quot;
-    assert proposals.size() == gt.size()
-
-    proposals = proposals.float()
-    gt = gt.float()
-    px = (proposals[..., 0] + proposals[..., 2]) * 0.5
-    py = (proposals[..., 1] + proposals[..., 3]) * 0.5
-    pw = proposals[..., 2] - proposals[..., 0] + 1.0
-    ph = proposals[..., 3] - proposals[..., 1] + 1.0
-
-    gx = (gt[..., 0] + gt[..., 2]) * 0.5
-    gy = (gt[..., 1] + gt[..., 3]) * 0.5
-    gw = gt[..., 2] - gt[..., 0] + 1.0
-    gh = gt[..., 3] - gt[..., 1] + 1.0
-
-    dx = (gx - px) / pw
-    dy = (gy - py) / ph
-    dw = torch.log(gw / pw)
-    dh = torch.log(gh / ph)
-    deltas = torch.stack([dx, dy, dw, dh], dim=-1)
-
-    means = deltas.new_tensor(means).unsqueeze(0)
-    stds = deltas.new_tensor(stds).unsqueeze(0)
-    deltas = deltas.sub_(means).div_(stds)
-
-    return deltas
-
-
-def delta2bbox(rois,
-               deltas,
-               means=[0, 0, 0, 0],
-               stds=[1, 1, 1, 1],
-               max_shape=None):
-    &amp;quot;&amp;quot;&amp;quot;convert delta to bbox
-
-    Args:
-        rois (torch.Tensor): shape (m, 4)
-        deltas (torch.Tensor): shape (n, 4)
-        means (list): for unnormalization, default [0, 0, 0, 0]
-        stds (list): for unnormalization, default [1, 1, 1, 1]
-        max_shape (list): [w, h], normally image_shape
-
-    Returns:
-        bboxes (torch.Tensor): shape (n, 4)
-    &amp;quot;&amp;quot;&amp;quot;
-    means = deltas.new_tensor(means).repeat(1, deltas.size(1) // 4)
-    stds = deltas.new_tensor(stds).repeat(1, deltas.size(1) // 4)
-    denorm_deltas = deltas * stds + means
-    dx = denorm_deltas[:, 0::4]
-    dy = denorm_deltas[:, 1::4]
-    dw = denorm_deltas[:, 2::4]
-    dh = denorm_deltas[:, 3::4]
-    px = ((rois[:, 0] + rois[:, 2]) * 0.5).unsqueeze(1).expand_as(dx)
-    py = ((rois[:, 1] + rois[:, 3]) * 0.5).unsqueeze(1).expand_as(dy)
-    pw = (rois[:, 2] - rois[:, 0] + 1.0).unsqueeze(1).expand_as(dw)
-    ph = (rois[:, 3] - rois[:, 1] + 1.0).unsqueeze(1).expand_as(dh)
-    gw = pw * dw.exp()
-    gh = ph * dh.exp()
-    gx = torch.addcmul(px, 1, pw, dx)  # gx = px + pw * dx
-    gy = torch.addcmul(py, 1, ph, dy)  # gy = py + ph * dy
-    x1 = gx - gw * 0.5 + 0.5
-    y1 = gy - gh * 0.5 + 0.5
-    x2 = gx + gw * 0.5 - 0.5
-    y2 = gy + gh * 0.5 - 0.5
-    if max_shape is not None:
-        x1 = x1.clamp(min=0, max=max_shape[1] - 1)
-        y1 = y1.clamp(min=0, max=max_shape[0] - 1)
-        x2 = x2.clamp(min=0, max=max_shape[1] - 1)
-        y2 = y2.clamp(min=0, max=max_shape[0] - 1)
-    bboxes = torch.stack([x1, y1, x2, y2], dim=-1).view_as(deltas)
-    return bboxes
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h2 id=&#34;loss&#34;&gt;Loss&lt;/h2&gt;
-
-&lt;ul&gt;
-&lt;li&gt;code from: &lt;a href=&#34;https://github.com/open-mmlab/mmdetection/blob/f2cfa86b4294e2593429adccce64bfd049a27651/mmdet/core/loss/losses.py#L76-L89&#34; target=&#34;_blank&#34;&gt;https://github.com/open-mmlab/mmdetection/blob/f2cfa86b4294e2593429adccce64bfd049a27651/mmdet/core/loss/losses.py#L76-L89&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;def smooth_l1_loss(pred, target, beta=1.0):
-    &amp;quot;&amp;quot;&amp;quot;
-    Args:
-        pred (torch.Tensor): (m, 4)
-        target (torch.Tensor): (m, 4)
-        beta (float): smooth l1 loss parameter, default 1.0
-
-    Returns:
-        loss (torch.Tensor): scalar tensor
-    &amp;quot;&amp;quot;&amp;quot;
-    assert beta &amp;gt; 0
-    assert pred.size() == target.size() and target.numel() &amp;gt; 0
-    diff = torch.abs(pred - target)
-    loss = torch.where(diff &amp;lt; beta, 0.5 * diff * diff / beta,
-                       diff - 0.5 * beta).sum()
-    return loss
-
-
-def binary_cross_entropy(pred, label):
-    return F.binary_cross_entropy_with_logits(
-        pred, label.float(), reduction=&#39;sum&#39;)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h2 id=&#34;prediction&#34;&gt;Prediction&lt;/h2&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;def predict_pos_anchor(shape, target_deltas, sampled_neg_inds, seed=99):
-    # predicted value
-    torch.manual_seed(seed)
-    pos_delta_pred = target_deltas + torch.rand(target_deltas.shape) / 5
-    num_pos_neg_samples = target_deltas.shape[0] + len(sampled_neg_inds)
-    pos_cls_pred = torch.rand(num_pos_neg_samples)
-    return pos_cls_pred, pos_delta_pred
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h2 id=&#34;visualize&#34;&gt;Visualize&lt;/h2&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;def prepare_base_figure(shape, grid_size, figsize=(20, 20)):
-    &amp;quot;&amp;quot;&amp;quot;
-    Args:
-        shape (list):
-        grid_size (int):
-        figsize (tuple):
-    &amp;quot;&amp;quot;&amp;quot;
-    fig, ax = plt.subplots(figsize=figsize)
-
-    loc = plticker.MultipleLocator(base=grid_size)
-    ax.xaxis.set_major_locator(loc)
-    ax.yaxis.set_major_locator(loc)
-
-    ax.grid(which=&#39;major&#39;, axis=&#39;both&#39;, linestyle=&#39;--&#39;, color=&#39;w&#39;)
-    return ax
-
-
-def draw_anchor_gt_overlaps(overlaps, gt_bboxes_list, featmap_size,
-                            anchors_per_grid, anchor_stride,
-                            grid_size=1, draw_gt=False, figsize=(20, 20)):
-    &amp;quot;&amp;quot;&amp;quot;Draw anchor overlaps w.r.t. gt bboxes
-
-    Args:
-        overlaps (torch.Tensor): shape (n, n, )
-        gt_bboxes_list (torch.Tensor):
-        anchors_per_grid (int):
-        anchor_stride (int):
-        grid_size (int):
-        draw_gt (bool):
-        figsize (tuple):
-    &amp;quot;&amp;quot;&amp;quot;
-    max_anchor_overlaps = overlaps.reshape(*featmap_size, anchors_per_grid).cpu().numpy().max(axis=-1).copy()
-    positive_overlaps = np.where(max_anchor_overlaps &amp;gt; 0)
-
-    for gt_bbox in gt_bboxes_list:
-        assert any(gt_bbox % 16) is False
-
-    grid_x, grid_y = max_anchor_overlaps.shape[:2]
-    ax = prepare_base_figure(max_anchor_overlaps.shape, grid_size, figsize)
-    title = &amp;quot;Overlap(feature map&#39;s reg prediction and gt)&amp;quot;
-
-    if draw_gt:
-        background_image = np.zeros([*max_anchor_overlaps.shape, 3])
-        for gt_bbox in gt_bboxes_list:
-            x1, y1, x2, y2 = (gt_bbox // anchor_stride).numpy().astype(int)
-            cv2.rectangle(background_image, (x1, y1), (x2-1, y2-1), (0, 0, 255), 1)
-        ax.imshow(background_image, extent=[0, grid_x, grid_y, 0])
-        title += &amp;quot;, [gt:blue square]&amp;quot;
-
-        legend_elements = [Line2D([0], [0], marker=&#39;s&#39;, color=&#39;b&#39;, markersize=20, lw= 0, label=&#39;gt&#39;)]
-        ax.legend(handles=legend_elements, loc=&#39;upper right&#39;, fontsize=30)
-    else:
-        ax.imshow(max_anchor_overlaps, extent=[0, grid_x, grid_y, 0])
-        title += &amp;quot;, [overlaps:heatmap]&amp;quot;
-
-    for (x, y) in zip(*positive_overlaps):
-        ax.annotate(f&amp;quot;{max_anchor_overlaps[x, y]:.2f}&amp;quot;, xy=(0, 0),
-                    xytext=(x+0.13, y+0.6), color=&#39;white&#39;, size=20)
-    ax.xaxis.tick_top()
-    ax.tick_params(axis=&#39;both&#39;, which=&#39;major&#39;, labelsize=20)
-    plt.margins(0)
-    plt.title(title, fontsize=30, pad=20)
-    plt.show()
-
-
-def draw_pos_assigned_bboxes(image_shape, grid_size, gt_bboxes_list, pos_bboxes,
-                             pos_pred_bboxes=None, figsize=(20, 20)):
-    &amp;quot;&amp;quot;&amp;quot;Draw positive, negative bboxes.
-
-    Args:
-        image_shape (list):
-        grid_size (int):
-        gt_bboxes_list (torch.Tensor):
-        pos_bboxes (torch.Tensor):
-        pos_pred_bboxes (torch.Tensor):
-        figsize (tuple):
-    &amp;quot;&amp;quot;&amp;quot;
-    assert len(pos_bboxes) == len(pos_pred_bboxes)
-    for i in range(len(pos_bboxes)):
-        background_image = np.zeros(image_shape)
-        ax = prepare_base_figure(image_shape, grid_size, figsize)
-
-        for gt_bbox in gt_bboxes_list:
-            x1, y1, x2, y2 = gt_bbox
-            gt_coord = [(x2 + x1) // 2, (y2 + y1) // 2, (x2 - x1) // 2, (y2 - y1) // 2]
-            cv2.rectangle(background_image, (x1, y1), (x2, y2), (0, 0, 255), 1)
-
-        x1, y1, x2, y2 = pos_bboxes[i]
-        anchor_coord = [(x2 + x1) // 2, (y2 + y1) // 2, (x2 - x1) // 2, (y2 - y1) // 2]
-        cv2.rectangle(background_image, (x1, y1), (x2, y2), (0, 255, 0), 1)
-
-        x1, y1, x2, y2 = pos_pred_bboxes[i]
-        pred_coord = [(x2 + x1) // 2, (y2 + y1) // 2, (x2 - x1) // 2, (y2 - y1) // 2]
-        cv2.rectangle(background_image, (x1, y1), (x2, y2), (255, 0, 0), 1)
-
-        legend_elements = [Line2D([0], [0], color=&#39;b&#39;, lw=4, label=&#39;gt&#39;),
-                           Line2D([0], [0], color=&#39;r&#39;, lw=4, label=f&#39;pred(pos[{i}])&#39;),
-                           Line2D([0], [0], color=&#39;g&#39;, lw=4, label=f&#39;anchor(pos[{i}])&#39;),]
-
-        image_x, image_y = image_shape[:2]
-
-        ax.imshow(background_image, extent=[0, image_x, image_y, 0])
-        ax.legend(handles=legend_elements, loc=&#39;upper right&#39;, fontsize=30)
-
-        ax.annotate(&#39;coordination:&#39;, xy=(0, 0), xytext=(30, 150), color=&#39;white&#39;, size=30)
-        ax.annotate(f&#39;- anchor: {[int(x) for x in anchor_coord]}&#39;, xy=(0, 0),
-                    xytext=(40, 160), color=&#39;green&#39;, size=30)
-        ax.annotate(f&#39;- gt: {[int(x) for x in gt_coord]}&#39;, xy=(0, 0),
-                    xytext=(40, 170), color=&#39;blue&#39;, size=30)
-        ax.annotate(f&#39;- pred: {[int(x) for x in pred_coord]}&#39;, xy=(0, 0),
-                    xytext=(40, 180), color=&#39;red&#39;,size=30)
-
-        gt_coord = torch.tensor([gt_coord])
-        anchor_coord = torch.tensor([anchor_coord])
-        pred_coord = torch.tensor([pred_coord])
-        gt_delta = bbox2delta(anchor_coord, gt_coord)
-        pred_delta = bbox2delta(anchor_coord, pred_coord)
-
-        ax.annotate(&#39;delta:&#39;, xy=(0, 0), xytext=(30, 190), color=&#39;white&#39;, size=30)
-        ax.annotate(f&#39;- anchor_gt: {[round(float(x), 2) for x in gt_delta[0]]}&#39;, xy=(0, 0),
-                    xytext=(40, 200), color=&#39;white&#39;,size=30)
-        ax.annotate(f&#39;- anchor_pred: {[round(float(x), 2) for x in pred_delta[0]]}&#39;, xy=(0, 0),
-                    xytext=(40, 210), color=&#39;white&#39;, size=30)
-        ax.xaxis.tick_top()
-        ax.tick_params(axis=&#39;both&#39;, which=&#39;major&#39;, labelsize=20)
-
-        plt.title(&amp;quot;gt, prediction, anchor&amp;quot;, fontsize=30, pad=20)
-        plt.show()
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;def draw_base_anchor_on_grid(base_anchor, figsize=(20, 20)):
-    board = np.zeros((256, 256, 3))
-
-    for anchor in base_anchor:
-        x1, y1, x2, y2 = np.array(anchor) + 112  # 왜 112?
-        cv2.rectangle(board, (x1, y1), (x2, y2), (0, 255, 0), 1)
-
-    ax = prepare_base_figure((1, 1, 1), 16, figsize)
-
-    ax.annotate(&#39;base anchor center at (0, 0)&#39;, xy=(0, 0), xytext=(20, -85), color=&#39;white&#39;,size=30,
-                arrowprops=dict(facecolor=&#39;white&#39;, shrink=5),
-                )
-
-    ax.annotate(&#39;-23, -45&#39;, xy=(-23, -45), xytext=(-48, -78), color=&#39;white&#39;,size=30,
-                arrowprops=dict(facecolor=&#39;white&#39;, shrink=5),
-                )
-    ax.annotate(&#39;-32, -32&#39;, xy=(-32, -32), xytext=(-68, -68), color=&#39;white&#39;,size=30,
-                arrowprops=dict(facecolor=&#39;white&#39;, shrink=5),
-                )
-    ax.annotate(&#39;-45, -23&#39;, xy=(-45, -23), xytext=(-78, -58), color=&#39;white&#39;,size=30,
-                arrowprops=dict(facecolor=&#39;white&#39;, shrink=5),
-                )
-
-    ax.annotate(&#39;23, 45&#39;, xy=(23, 45), xytext=(22, 72), color=&#39;white&#39;,size=30,
-                arrowprops=dict(facecolor=&#39;white&#39;, shrink=5),
-                )
-    ax.annotate(&#39;32, 32&#39;, xy=(32, 32), xytext=(43, 43), color=&#39;white&#39;,size=30,
-                arrowprops=dict(facecolor=&#39;white&#39;, shrink=5),
-                )
-    ax.annotate(&#39;45, 23&#39;, xy=(45, 23), xytext=(72, 22), color=&#39;white&#39;,size=30,
-                arrowprops=dict(facecolor=&#39;white&#39;, shrink=5),
-                )
-    legend_elements = [Line2D([0], [0], color=&#39;g&#39;, lw=4, label=&#39;base anchor&#39;)]
-    ax.imshow(board, extent=[-128, 128, 128, -128])
-    ax.legend(handles=legend_elements, loc=&#39;upper right&#39;, fontsize=30)
-    ax.xaxis.tick_top()
-    ax.tick_params(axis=&#39;both&#39;, which=&#39;major&#39;, labelsize=20)
-    plt.title(&amp;quot;Base Anchor&amp;quot;, fontsize=30, pad=20)
-    plt.show()
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;def draw_anchor_samples_on_image(image_shape, base_anchor, all_anchors, shifts):
-    board = np.zeros(image_shape)
-    fig, ax = plt.subplots(figsize=(20, 20))
-    loc = plticker.FixedLocator(range(0, image_shape[0], 16))
-
-    ax.xaxis.set_major_locator(loc)
-    ax.yaxis.set_major_locator(loc)
-
-    ax.grid(which=&#39;major&#39;, axis=&#39;both&#39;, linestyle=&#39;--&#39;, color=&#39;w&#39;)
-
-    for anchor in base_anchor:
-        x1, y1, x2, y2 = np.array(anchor, dtype=np.uint8) + np.array([48, 112, 48, 112], dtype=np.uint8)
-        cv2.rectangle(board, (x1, y1), (x2, y2), (0, 255, 0), 1)
-        x1 = int(x1 + 128)
-        x2 = int(x2 + 128)
-        cv2.rectangle(board, (x1, y1), (x2, y2), (0, 0, 255), 1)
-
-    for i in range(64, 208, 16):
-        ax.scatter(i, 128, s=50, c=&#39;r&#39;)
-
-    legend_elements = [Line2D([0], [0], color=&#39;g&#39;, lw=4, label=&#39;anchor[4, 8]&#39;),
-                       Line2D([0], [0], marker=&#39;o&#39;, color=&#39;r&#39;, label=&#39;center points of anchors&#39;,
-                       markerfacecolor=&#39;r&#39;, lw=0, markersize=12),
-                       Line2D([0], [0], color=&#39;b&#39;, lw=4, label=&#39;anchor[12, 8]&#39;)]
-
-    ax.annotate(&#39;coords: (4x16, 8x16)\nindex: (4, 8, :3)&#39;, xy=(63, 127), xytext=(30, 70), color=&#39;white&#39;,size=30,
-                arrowprops=dict(facecolor=&#39;white&#39;, shrink=5),
-                )
-    ax.annotate(&#39;8 shift steps along x-axis&#39;, xy=(80, 128), xytext=(64, 145), color=&#39;white&#39;,size=25)
-    ax.annotate(&#39;&#39;, xy=(188, 133), xytext=(64, 133), color=&#39;white&#39;,size=30,
-                arrowprops=dict(facecolor=&#39;white&#39;, shrink=5),
-                )
-    ax.imshow(board, extent=[0, image_shape[0], image_shape[1], 0])
-    ax.legend(handles=legend_elements, loc=&#39;upper right&#39;, fontsize=30)
-    ax.xaxis.tick_top()
-    ax.tick_params(axis=&#39;both&#39;, which=&#39;major&#39;, labelsize=20)
-    plt.title(&amp;quot;Anchor Samples on Image&amp;quot;, fontsize=30, pad=20)
-    plt.show()
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h2 id=&#34;what-is-anchor&#34;&gt;What is Anchor?&lt;/h2&gt;
-
-&lt;ul&gt;
-&lt;li&gt;첫 제안: Anchor라는 개념은 &lt;a href=&#34;https://arxiv.org/abs/1506.01497.pdf&#34; target=&#34;_blank&#34;&gt;Faster R-CNN&lt;/a&gt;에서 처음으로 제안되었습니다.&lt;/li&gt;
-&lt;li&gt;주요 모델: Anchor는 대부분의 one-stage, two-stage detector에서 사용하며 대표적으로는 &lt;a href=&#34;https://arxiv.org/abs/1708.02002.pdf&#34; target=&#34;_blank&#34;&gt;RetinaNet&lt;/a&gt;(one-stage)와 Faster R-CNN(two-stage)가 존재합니다.&lt;/li&gt;
-&lt;li&gt;목적:
-
-&lt;ul&gt;
-&lt;li&gt;detection은 image에 object가 있는 영역을 bounding box(bbox)로 예측해야 합니다. 이런 예측을 용이하게 해주기 위해서 이미지로부터 얻은 feature map의 매 pixel 위치마다 bbox를 여러 개를 그립니다.(anchor) 이 anchor들과 gt를 비교하고 겹치는 영역을 기준으로 학습 대상으로 사용할 anchor를 선별합니다.&lt;/li&gt;
-&lt;li&gt;선별한 anchor를 이용해서 &lt;strong&gt;anchor와 정답(ground-truth)과의 차이&lt;/strong&gt;에 대해서 학습합니다.(이 때, anchor의 크기가 적절하지 못한 경우에는 차이의 편차가 커지게 될 것이므로 학습이 어려워질 수 있어서 적절한 크기를 선정하는게 중요합니다.)&lt;/li&gt;
-&lt;li&gt;anchor는 균일한 간격, 일정한 규칙으로 생성되어, 물체가 특정 위치에 존재할 때만 탐지가 잘 되거나, 혹은 특정 위치에서는 탐지가 잘 되지 않는 현상을 줄입니다. 이를 translation-Invariance라고 합니다. [1]&lt;/li&gt;
-&lt;/ul&gt;&lt;/li&gt;
-&lt;li&gt;Parameters:
-
-&lt;ul&gt;
-&lt;li&gt;scale: feature map에서의 anchor 크기(scale)입니다.&lt;/li&gt;
-&lt;li&gt;ratio: feature map에서의 anchor 비율(ratio)입니다.&lt;/li&gt;
-&lt;li&gt;stride: image를 기준으로 어느 정도 간격으로 anchor를 생성할 것인지 나타내는 값입니다.(주로 image와 feature map 크기의 비율 값을 사용합니다.)
-
-&lt;ul&gt;
-&lt;li&gt;scale과 ratio가 feature map 내에서의 &lt;code&gt;base_anchor_size&lt;/code&gt;를 만들게 됩니다.&lt;/li&gt;
-&lt;li&gt;feature map의 크기는 image의 너비, 높이를 &lt;code&gt;stride&lt;/code&gt;로 나눈 값이기 때문에 이게 반영된 image에서의 anchor 크기는 &lt;code&gt;base_anchor_size * stride&lt;/code&gt; 입니다.&lt;/li&gt;
-&lt;/ul&gt;&lt;/li&gt;
-&lt;/ul&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h2 id=&#34;how-to-draw-grid-anchors&#34;&gt;How to draw grid anchors&lt;/h2&gt;
-
-&lt;ul&gt;
-&lt;li&gt;1개 anchor bbox의 coordination은 &lt;code&gt;[x1, y1, x2, y2]&lt;/code&gt;로 표현할 수 있습니다.&lt;/li&gt;
-&lt;li&gt;anchor는 feature map의 예측 값에 매칭되어야 하기 때문에 feature map과 동일한 width, height를 가지며 channel은 4로 갖습니다.&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;base_anchor&lt;/code&gt;는 기본적인 anchor의 모습입니다.&lt;/li&gt;
-&lt;li&gt;feature map과 동일한 width, height를 갖더라도 실제 이미지 상 크기에서 anchor가 어디에 위치하는지를 알 수 있어야 합니다. 그래서 stride를 고려합니다.
-
-&lt;ul&gt;
-&lt;li&gt;stride를 &lt;code&gt;[image_width // feature_map_width] == [image_height // feature_map_height]&lt;/code&gt;로 지정하는 경우에 image와 feature map 비율만큼의 크기를 anchor의 1개 pixel이 가지게 됩니다. 즉, image에서 생각을 하면 stride만큼 띄어서 anchor가 존재한다고 생각하시면 됩니다.(&lt;code&gt;grid_anchors&lt;/code&gt;)&lt;/li&gt;
-&lt;li&gt;중심 좌표가 stride 만큼 떨어져서 존재한다고 보면 되고, 그 위에 그려지는 bbox의 크기는 &lt;code&gt;base_anchor_size&lt;/code&gt;(&lt;code&gt;AnchorGenerator.base_anchors&lt;/code&gt;)가 결정하게 됩니다. scale, ratio 2개 parameter로 결정되는 크기이고 크기의 단위는 &lt;strong&gt;1 stride&lt;/strong&gt;가 됩니다. [2]&lt;/li&gt;
-&lt;/ul&gt;&lt;/li&gt;
-&lt;li&gt;RetinaNet의 경우 Octave scale을 사용하였습니다. Faster R-CNN에서 사용한, $2,4,6$ 등 $n$배로 올라가는 scale 간격 대신 $2^0, 2^{\frac 1 3}, 2^{\frac 2 3}$과 같이 (base scale)^(octave scale)을 사용하였습니다. [3]&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;base_anchor_size&lt;/code&gt;는 scale, ratio에 의해 결정되어 feature map에 동일하게 적용됩니다. 하지만, feature map이 작은 경우, stride가 커지게 되고 반대의 경우엔 stride가 작아지게 되어 image에서의 anchor bbox 크기는 feature map의 영향을 받습니다.
-
-&lt;ul&gt;
-&lt;li&gt;anchor box가 크다는 건, 큰 물체를 잡는데 유리할 것이고 anchor box가 작은 경우엔 작은 물체를 잡는데 유리할 것입니다.&lt;/li&gt;
-&lt;li&gt;이는 feature map의 크기에 따라서 예측하는 물체의 크기와도 상관이 있습니다.(보통 CNN에서의 큰 feature map이 high-level 정보를 가지고 있어서 큰 물체를 예측 잘 하고, 작은 feature가 low-level 정보를 다뤄서 작은 물체 예측을 잘 한다고 알려져 있습니다.)&lt;/li&gt;
-&lt;/ul&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h3 id=&#34;settings&#34;&gt;Settings&lt;/h3&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;code&gt;gt_bboxes_list&lt;/code&gt; 의 bbox 크기를 크게 잡으면 다양한 positive anchor 후보들이 생기는 것을 확인할 수 있습니다.&lt;/li&gt;
-&lt;li&gt;scale, ratio를 조절해서 anchor bbox의 형태를 편향되게 만들 수 있습니다.&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;base_size&lt;/code&gt;는 &lt;code&gt;image_size&lt;/code&gt; // &lt;code&gt;featmap_size&lt;/code&gt;의 값을 주로 갖는데, 이보다 크거나 작으면 전체 image를 커버하지 못하거나 image를 넘어서 커버하게 될 수 있습니다.&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;# 1개 feature map에 대해서만 분석을 진행합니다.
-# multi-level feature map(FPN)이 사용되는 경우는 뒤에서 보도록 하겠습니다.
-
-base_size = 32
-anchor_stride = 32
-scales = torch.Tensor([2, 4, 8])
-ratios = torch.Tensor([0.5, 1.0, 2.0])
-featmap_size = [16, 16]
-device = &#39;cpu&#39;
-image_shape = [256, 256, 3]
-anchors_per_grid = len(scales) * len(ratios)
-
-# x1y1x2y2
-gt_bboxes_list = torch.FloatTensor([[32, 32, 32*3, 32*3]]).to(device)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h3 id=&#34;base-anchor&#34;&gt;Base Anchor&lt;/h3&gt;
-
-&lt;ul&gt;
-&lt;li&gt;base anchor를 원점이 중심인 좌표계에 그려봅니다. 이 base anchor는 scale * ratio의 개수만큼 생성되며 feature map 각 pixel의 해당 위치에 존재하게 됩니다.&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;base_anchor = gen_base_anchors(base_size, ratios, scales[:1])
-draw_base_anchor_on_grid(base_anchor)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code&gt;Clipping input data to the valid range for imshow with RGB data ([0..1] for floats or [0..255] for integers).
-&lt;/code&gt;&lt;/pre&gt;
-
-
-
-
-  
-
-&lt;figure&gt;
-
-&lt;img src=&#34;/img/mmdet%20-%20anchor_24_1.png&#34; /&gt;
-
-
-&lt;/figure&gt;
-
-&lt;ul&gt;
-&lt;li&gt;각 feature map의 pixel은 원 image 기준 좌표가 있을 것입니다. 이 좌표들에 base anchor를 더해주면 feature map 기준 각 pixel에 base anchor가 존재하게 되고 image 기준으로 stride 만큼 띄엄띄엄 base anchor가 존재하는 것으로 해석할 수 있습니다.
-
-&lt;ul&gt;
-&lt;li&gt;feature map 모든 pixel에 할당된 anchor와 이 때 anchor들 간 거리인 &lt;code&gt;shifts&lt;/code&gt;를 구하고 몇 개의 샘플을 시각화해봅시다.&lt;/li&gt;
-&lt;/ul&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;all_anchors, shifts = grid_anchors(base_anchor, featmap_size, anchor_stride, device)
-draw_anchor_samples_on_image(image_shape, base_anchor, all_anchors, shifts)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code&gt;Clipping input data to the valid range for imshow with RGB data ([0..1] for floats or [0..255] for integers).
-&lt;/code&gt;&lt;/pre&gt;
-
-
-
-
-  
-
-&lt;figure&gt;
-
-&lt;img src=&#34;/img/mmdet%20-%20anchor_26_1.png&#34; /&gt;
-
-
-&lt;/figure&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;code&gt;get_anchors&lt;/code&gt;라는 함수를 통해 전체 anchor와 각각에 대한 valid 여부를 나타내는 flag를 얻습니다.&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;anchors, flags = get_anchors(image_shape, featmap_size, anchor_stride, scales, ratios, device)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;assert anchors.shape[0] == featmap_size[0] * featmap_size[1] * 9  # feature map 32x32 각 pixel에 9개의 anchors
-assert len(flags) == len(anchors)  # anchor를 사용할 지 말지 결정하는 flags와 anchors의 개수는 같아야 합니다.
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h2 id=&#34;anchor-selection&#34;&gt;Anchor Selection&lt;/h2&gt;
-
-&lt;ul&gt;
-&lt;li&gt;anchor는 gt와의 overlap 정도에 따라서 positive, negative를 배정합니다. 이 배정된 값들은 이 후에 regression, classification에 활용되게 됩니다.
-
-&lt;ul&gt;
-&lt;li&gt;positive는 classification, regression 모두에 활용됩니다. 그래야 특정 bbox에 대해서 object의 class와 영역을 예측할 수 있게 됩니다.&lt;/li&gt;
-&lt;li&gt;negative는 classification에만 활용됩니다. 그 이유는 negative의 경우 background라는 정보는 가지고 있지만, 어느 위치에 물체가 있다는 정보는 가지고 있지 않기 때문입니다. [4]&lt;/li&gt;
-&lt;li&gt;overlap은 &lt;a href=&#34;https://www.pyimagesearch.com/2016/11/07/intersection-over-union-iou-for-object-detection/&#34; target=&#34;_blank&#34;&gt;IoU(Intersection over Union)&lt;/a&gt;를 통해 계산합니다.&lt;/li&gt;
-&lt;/ul&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;overlaps = bbox_overlaps(gt_bboxes_list, anchors)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;assert overlaps.shape == (len(gt_bboxes_list), anchors.shape[0])
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;draw_anchor_gt_overlaps(overlaps, gt_bboxes_list, featmap_size,
-                        anchors_per_grid, anchor_stride=anchor_stride, draw_gt=True)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code&gt;Clipping input data to the valid range for imshow with RGB data ([0..1] for floats or [0..255] for integers).
-&lt;/code&gt;&lt;/pre&gt;
-
-
-
-
-  
-
-&lt;figure&gt;
-
-&lt;img src=&#34;/img/mmdet%20-%20anchor_33_1.png&#34; /&gt;
-
-
-&lt;/figure&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;draw_anchor_gt_overlaps(overlaps, gt_bboxes_list, featmap_size, anchors_per_grid, anchor_stride)
-&lt;/code&gt;&lt;/pre&gt;
-
-
-
-
-  
-
-&lt;figure&gt;
-
-&lt;img src=&#34;/img/mmdet%20-%20anchor_34_0.png&#34; /&gt;
-
-
-&lt;/figure&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;# gt와의 overlap에 따라 pos, negative를 배정.
-num_gts, assigned_gt_inds, max_overlaps = assign_wrt_overlaps(overlaps)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;pos_inds = torch.nonzero(assigned_gt_inds &amp;gt; 0).squeeze(-1).unique()  # positive indices
-neg_inds = torch.nonzero(assigned_gt_inds == 0).squeeze(-1).unique()  # negative indices
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;# positive와 1:1 비율로 학습에 사용할 negative sample을 얻습니다.
-sampled_neg_inds = neg_inds[torch.randint(0, len(neg_inds), size=(len(pos_inds), ))]
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;pos_neg_cls_label = torch.cat([torch.ones(len(pos_inds)), torch.zeros(len(sampled_neg_inds))])
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;bboxes = anchors  # bboxes
-pos_bboxes = bboxes[pos_inds]  # positive boxes
-pos_assigned_gt_inds = assigned_gt_inds[pos_inds] - 1
-pos_gt_bboxes = gt_bboxes_list[pos_assigned_gt_inds, :]
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h2 id=&#34;anchor-as-a-target&#34;&gt;Anchor as a Target&lt;/h2&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;gt-anchor 차이&lt;/strong&gt;에 대해서 학습해야 하기 때문에 [5] anchor bbox를 coordination(&lt;code&gt;[x1, y1, x2, y2]&lt;/code&gt;) 형태에서 target(&lt;code&gt;target_delta&lt;/code&gt;)으로 변환해주는 과정을 거쳐야 합니다.&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;# target_deltas는 특정 pos_inds에 대한 것이며 이 inds에 할당된 anchor를 기준으로만 loss가 계산이 되도록 해야 합니다.
-target_deltas = bbox2delta(pos_bboxes, pos_gt_bboxes)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;# check if delta has same bbox value when reversed
-bboxes_reversed = delta2bbox(pos_bboxes, target_deltas)
-assert torch.equal(bboxes_reversed[0], gt_bboxes_list[0])
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h2 id=&#34;train-anchor&#34;&gt;Train anchor&lt;/h2&gt;
-
-&lt;ul&gt;
-&lt;li&gt;anchor target을 만들었다면 앞에서 나온 feature를 network(&lt;code&gt;anchor_head&lt;/code&gt;)를 통과시켜 reg_pred로 delta를 예측하도록, score로 class를 예측하도록 학습시키면 됩니다.&lt;/li&gt;
-&lt;li&gt;loss는 one/two-stage network 마다 다르게 적용되나 공통적으로 regression은 smooth-l1를, classification은 &lt;a href=&#34;https://en.wikipedia.org/wiki/Cross_entropy&#34; target=&#34;_blank&#34;&gt;cross entropy&lt;/a&gt;를 가장 많이 사용합니다.&lt;/li&gt;
-
-&lt;li&gt;&lt;p&gt;loss 계산에는 positive, negative sample을 모두 다 사용할 수는 있지만, positive sample에 비해 negative sample의 개수가 압도적으로 많으므로, 일부 정해진 숫자 만큼만의 sample을 선정하여 학습에 사용합니다.(e.g. positive:negative=1:1.) [5]&lt;/p&gt;&lt;/li&gt;
-
-&lt;li&gt;&lt;p&gt;엄밀하게는 anchor prediction을 구하고 그 중에 &lt;code&gt;pos_inds&lt;/code&gt;에 해당하는 값만 가져오는 과정을 거쳐야 하는데 편의를 위해서 해당 과정을 거쳐서 &lt;code&gt;pos_delta_pred&lt;/code&gt;를 구했다고 하겠습니다.&lt;/p&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;# delta prediction for positive indices (will update weight)
-pos_neg_cls_pred, pos_delta_pred = predict_pos_anchor(anchors.shape, target_deltas, sampled_neg_inds)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;reg_loss = smooth_l1_loss(pos_delta_pred, target_deltas, beta=1.0)
-print(&amp;quot;reg_loss:&amp;quot;, reg_loss)
-cls_loss = binary_cross_entropy(pos_neg_cls_pred, pos_neg_cls_label)
-print(&amp;quot;cls_loss:&amp;quot;, cls_loss)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code&gt;reg_loss: tensor(0.0795)
-cls_loss: tensor(2.7997)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h2 id=&#34;test&#34;&gt;Test&lt;/h2&gt;
-
-&lt;ul&gt;
-&lt;li&gt;feature map을 받아 bbox의 cls_pred, reg_pred를 예측할 때 &lt;strong&gt;reg_pred를 delta로 하기 때문에&lt;/strong&gt;, delta를 bbox로 변환해주는 과정이 필요합니다.(&lt;code&gt;delta2bbox&lt;/code&gt;)&lt;/li&gt;
-&lt;li&gt;delta는 &lt;strong&gt;gt-anchor의 차이&lt;/strong&gt;이기 때문에 anchor bbox의 coordination 정보를 가지고 있으면 재변환해주는 과정은 수식적으로 풀기만 하면 되어 어렵지 않습니다.&lt;/li&gt;
-
-&lt;li&gt;&lt;p&gt;최종적으로 object 예측 결과는 cls_pred가 특정 threshold 이상인 값들에 대해서 &lt;a href=&#34;https://en.wikipedia.org/wiki/Canny_edge_detector#Non-maximum_suppression&#34; target=&#34;_blank&#34;&gt;Non-maximum suppresion(NMS)&lt;/a&gt;를 통과시킨 결과입니다.&lt;/p&gt;&lt;/li&gt;
-
-&lt;li&gt;&lt;p&gt;&lt;code&gt;cls_pred&lt;/code&gt; threshold, nms가 모두 고려되었다고 가정하고 위에서 얻은 &lt;code&gt;pos_delta_pred&lt;/code&gt;를 test 결과로 얻었다고 가정하겠습니다.&lt;/p&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;pos_bboxes_pred = delta2bbox(pos_bboxes, pos_delta_pred)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;print(&amp;quot;gt_bboxes_list:&amp;quot;, gt_bboxes_list)
-print(&amp;quot;pos_bboxes_pred:&amp;quot;, pos_bboxes_pred)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code&gt;gt_bboxes_list: tensor([[32., 32., 96., 96.]])
-pos_bboxes_pred: tensor([[ 26.1650,  42.4359, 103.7359, 120.4897],
-        [ 37.5533,  37.3444, 102.2102, 107.5841]])
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;# blue: gt, green: anchor, red: prediction32, 32, 9
-draw_pos_assigned_bboxes(image_shape, base_size, gt_bboxes_list, pos_bboxes, pos_bboxes_pred)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code&gt;Clipping input data to the valid range for imshow with RGB data ([0..1] for floats or [0..255] for integers).
-&lt;/code&gt;&lt;/pre&gt;
-
-
-
-
-  
-
-&lt;figure&gt;
-
-&lt;img src=&#34;/img/mmdet%20-%20anchor_51_1.png&#34; /&gt;
-
-
-&lt;/figure&gt;
-
-&lt;pre&gt;&lt;code&gt;Clipping input data to the valid range for imshow with RGB data ([0..1] for floats or [0..255] for integers).
-&lt;/code&gt;&lt;/pre&gt;
-
-
-
-
-  
-
-&lt;figure&gt;
-
-&lt;img src=&#34;/img/mmdet%20-%20anchor_51_3.png&#34; /&gt;
-
-
-&lt;/figure&gt;
-
-&lt;h2 id=&#34;reference&#34;&gt;Reference&lt;/h2&gt;
-
-&lt;hr /&gt;
-
-&lt;h3 id=&#34;faster-r-cnn&#34;&gt;Faster R-CNN&lt;/h3&gt;
-
-&lt;p&gt;&lt;strong&gt;[1]&lt;/strong&gt; Translation-Invariant Anchors
-     An important property of our approach is that it is translation invariant, both in terms of the anchors and the functions that compute proposals relative to the anchors.
-     If one translates an object in an image, the proposal should translate and the same function should be able to predict the proposal in either location.&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;[2]&lt;/strong&gt; Multi-Scale Anchors as Regression References
-     Our design of anchors presents a novel scheme for addressing multiple scales (and aspect ratios).
-     The second way is to use sliding windows of multiple scales (and/or aspect ratios) on the feature maps.&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;[3]&lt;/strong&gt; For denser scale coverage than in Faster-RCNN, at each level we add anchors of sizes ${2^0,2^{\frac 1 3}, 2^{\frac 2 3}}$ of the original set of $3$ aspect ratio anchors.
-     This improve AP in our setting. In total there are $A = 9$ anchors per level and across levels they cover the scale range $32 - 813$ pixels with respect to the network’s input image.&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;[4]&lt;/strong&gt; For training RPNs, we assign a binary class label (of being an object or not) to each anchor.
-     We assign a positive label to two kinds of anchors:
-     (i) the anchor/anchors with the highest Intersection-overUnion (IoU) overlap with a ground-truth box, or
-     (ii) an anchor that has an IoU overlap higher than $0.7$ with any ground-truth box.
-     Note that a single ground-truth box may assign positive labels to multiple anchors.
-     We assign a negative label to a non-positive anchor if its IoU ratio is lower than $0.3$ for all ground-truth boxes.
-     Anchors that are neither positive nor negative do not contribute to the training objective.&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;[5]&lt;/strong&gt; For bounding box regression, we adopt the parameterizations of the 4 coordinates following:
-$$ t_x = (x - x_a) / w_a,\ t_y = (y - y_a) / h_a, &lt;br /&gt;
-   t_w = \log(w / w_a),\ t_h = \log(h / h_a), &lt;br /&gt;
-   t_x^{\ast} = (x^{\ast} - x_a) / w_a,\ t_y^{\ast} = (y^{\ast} - y_a) / h_a, &lt;br /&gt;
-   t_w^{\ast} = \log(w^{\ast} / w_a),\ t_h^{\ast} = \log(h^{\ast} / h_a) $$&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;[6]&lt;/strong&gt; It is possible to optimize for the loss functions of all anchors, but this will bias towards negative samples as they are dominate.
-     Instead, we randomly sample $256$ anchors in an image to compute the loss function of a mini-batch, where the sampled positive and negative anchors have a ratio of up to $1:1$.&lt;/p&gt;
-
-&lt;h3 id=&#34;retinanet&#34;&gt;RetinaNet&lt;/h3&gt;
-
-&lt;p&gt;&lt;strong&gt;[7]&lt;/strong&gt; The design of our RetinaNet detector shares many similarities with previous dense detectors, in particular the concept of &amp;lsquo;anchors&amp;rsquo; introduced by RPN and use of features pyramids as in SSD and FPN.&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;[8]&lt;/strong&gt; We use translation-invariant anchor boxes similar to those in the RPN variant. The anchors have areas of $32^2$ to $512^2$ on pyramid levels $P_3$ to $P_7$, respectively. at each pyramid level we use anchors at three aspect ratios ${1:2, 1:1, 2:1}$. For denser scale coverage, at each level we add anchors of sizes ${2^0, 2^{\frac 1 3}, 2^{\frac 2 3}}$ of the original set of 3 aspect ratio anchors. This improve AP in our setting. In total there are $A=9$ anchors per level and across levels they cover the scale range $32-813$ pixels with respect to the network&amp;rsquo;s input image. Each anchor is assigned a length $K$ one-hot vector of classification targets, where $K$ is the number of object classes, and a $4$-vector of box regression targets. We use the assignment rule from RPN but modified for multi-class detection and with adjusted thresholds. Specifically, anchors are assigned to ground-truth object boxes using an intersection-over-union(IoU) threshold of $0.5$; and to background if their IoU is in $[0, 0.4)$. As each anchor is assigned to at most one object box, we set the corresponding entry in its length $K$ label vector to $1$ and all other entries to $0$. If an anchor is unassigned, which may happen with overlap in $[0.4, 0.5)$, it is ignored during training. Box regression targets are computed as the offset between each anchor and its assigned object box, or omitted if there is no assignment.&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;[9]&lt;/strong&gt; The classification subnet predicts the probability of object presence at each spatial position for each of the $A$ anchors and $K$ object classes.&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;[10]&lt;/strong&gt; In parallel with the object classification subnet, we attach another small FCN to each pyramid level for the purpose of regressing the offset from each anchor box to a nearby ground-truth object, if one exists. For each of the $A$ anchors per spatial location, these $4$ outputs predict the relative offset between the anchor and the ground-truth box.&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
       <title>2.2 Histogram</title>
       <link>/post/histogram/</link>
       <pubDate>Wed, 01 May 2019 22:22:17 +0900</pubDate>
@@ -1616,6 +689,359 @@ plt.show()
 &lt;li&gt;[1] 오일석, 컴퓨터 비전, 2014, pp. 58-63&lt;/li&gt;
 &lt;li&gt;[2] Alexander Mordvintsev &amp;amp; Abid K., &amp;lsquo;Histograms - 1 : Find, Plot, Analyze !!!&amp;lsquo;,  OpenCV-python tutorials. 2013 [Online]. Available: &lt;a href=&#34;https://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_imgproc/py_histograms/py_histogram_begins/py_histogram_begins.html#histogram-calculation-in-opencv&#34; target=&#34;_blank&#34;&gt;https://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_imgproc/py_histograms/py_histogram_begins/py_histogram_begins.html#histogram-calculation-in-opencv&lt;/a&gt; [Accessed: 29- Mar- 2019]&lt;/li&gt;
 &lt;li&gt;[3] Alexander Mordvintsev &amp;amp; Abid K., &amp;lsquo;Histograms - 2: Histogram Equalization&amp;rsquo;,  OpenCV-python tutorials. 2013 [Online]. Available: &lt;a href=&#34;https://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_imgproc/py_histograms/py_histogram_equalization/py_histogram_equalization.html#histogram-equalization&#34; target=&#34;_blank&#34;&gt;https://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_imgproc/py_histograms/py_histogram_equalization/py_histogram_equalization.html#histogram-equalization&lt;/a&gt; [Accessed: 29- Mar- 2019]&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>2.3. Image Thresholding</title>
+      <link>/post/image-thresholding/</link>
+      <pubDate>Wed, 01 May 2019 22:22:17 +0900</pubDate>
+      
+      <guid>/post/image-thresholding/</guid>
+      <description>
+
+&lt;hr /&gt;
+
+&lt;h2 id=&#34;import-libraries&#34;&gt;Import Libraries&lt;/h2&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;import os
+import sys
+import math
+from platform import python_version
+
+import cv2
+import matplotlib.pyplot as plt
+import matplotlib
+import numpy as np
+
+print(&amp;quot;Python version : &amp;quot;, python_version())
+print(&amp;quot;Opencv version : &amp;quot;, cv2.__version__)
+matplotlib.rcParams[&#39;figure.figsize&#39;] = (4.0, 4.0)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;Python version :  3.6.7
+Opencv version :  3.4.5
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;hr /&gt;
+
+&lt;h2 id=&#34;data-load&#34;&gt;Data load&lt;/h2&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;sample_image_path = &#39;../image/&#39;
+sample_image = &#39;lena_gray.jpg&#39;
+img = cv2.imread(sample_image_path + sample_image, cv2.IMREAD_GRAYSCALE)
+
+coin_image = &#39;coins.jpg&#39;
+mask = np.array([[0, 1, 0],[1, 1, 1], [0, 1, 0]], dtype=np.uint8)
+coin_img = cv2.imread(sample_image_path + coin_image, cv2.IMREAD_GRAYSCALE)
+
+ret, coin = cv2.threshold(coin_img, 240, 255, cv2.THRESH_BINARY_INV)
+coin = cv2.dilate(coin, mask, iterations=1)
+coin = cv2.erode(coin, mask, iterations=6)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;hr /&gt;
+
+&lt;h2 id=&#34;data-description&#34;&gt;Data description&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;본 예제에서 사용할 데이터는 아래와 같습니다.
+
+&lt;ul&gt;
+&lt;li&gt;Lena : 지난 예제에서 사용한 Lena 입니다.&lt;/li&gt;
+&lt;li&gt;Coins : Blob labeling 예제에서 사용될 이미지 입니다.
+
+&lt;ul&gt;
+&lt;li&gt;blob labeling이라는 주제에 맞게 전처리가 된 이미지 입니다. (blob labeling에서 자세하게 설명합니다.)&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;plt.subplot(1, 2, 1)
+plt.imshow(img, cmap=&#39;gray&#39;)
+plt.title(&#39;Lena&#39;)
+plt.subplot(1, 2, 2)
+plt.imshow(coin, cmap=&#39;gray&#39;)
+plt.title(&#39;Coins&#39;)
+plt.show()
+&lt;/code&gt;&lt;/pre&gt;
+
+
+
+
+  
+
+&lt;figure&gt;
+
+&lt;img src=&#34;/img/2.3%20Image%20Thresholding_6_0.png&#34; /&gt;
+
+
+&lt;/figure&gt;
+
+&lt;hr /&gt;
+
+&lt;h2 id=&#34;binarization&#34;&gt;Binarization&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Binarization(이진화)이란, grayscale의 이미지를 기준에 따라 0 또는 1의 값만을 갖도록 만드는 작업입니다.
+
+&lt;ul&gt;
+&lt;li&gt;일반적으로 특정 픽셀 값을 기준으로 더 작은 값은 0으로, 더 큰 값은 1로 만듭니다.&lt;/li&gt;
+&lt;li&gt;사용 목적에 따라 결과 값을 반전시킬 때도 있는데, 추후에 코드 예시로 알아보겠습니다.&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;li&gt;이진화 자체는 단순한 작업이나, 추후에 보다 발전된 알고리즘을 다루기 위한 기본이 됩니다.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;def simple_img_binarization_npy(img, threshold):
+    w, h = img.shape
+    b_img = np.zeros([w, h])
+    b_img[img &amp;gt; threshold] = 1
+    return b_img
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;plt.figure(figsize=(8, 8))
+b_img1 = simple_img_binarization_npy(img, 200)
+b_img2 = simple_img_binarization_npy(img, 150)
+b_img3 = simple_img_binarization_npy(img, 100)
+
+plt.subplot(2, 2, 1)
+plt.imshow(img, cmap=&#39;gray&#39;)
+plt.title(&#39;Gray Lena&#39;)
+
+plt.subplot(2, 2, 2)
+plt.imshow(b_img1, cmap=&#39;gray&#39;)
+plt.title(&#39;Lena over 200&#39;)
+
+plt.subplot(2, 2, 3)
+plt.imshow(b_img2, cmap=&#39;gray&#39;)
+plt.title(&#39;Lena over 150&#39;)
+
+plt.subplot(2, 2, 4)
+plt.imshow(b_img3, cmap=&#39;gray&#39;)
+plt.title(&#39;Lena over 100&#39;)
+
+plt.suptitle(&#39;Lena with different threshold value (numpy)&#39;, size=15)
+plt.show()
+&lt;/code&gt;&lt;/pre&gt;
+
+
+
+
+  
+
+&lt;figure&gt;
+
+&lt;img src=&#34;/img/2.3%20Image%20Thresholding_10_0.png&#34; /&gt;
+
+
+&lt;/figure&gt;
+
+&lt;hr /&gt;
+
+&lt;ul&gt;
+&lt;li&gt;위에서 numpy를 이용했다면, 이번엔 OpenCV 내장 함수를 이용하여 image threshold를 해보겠습니다.&lt;/li&gt;
+&lt;li&gt;OpenCV 함수로는 보다 편리하게 다양한 결과물을 만들어낼 수 있습니다.
+
+&lt;ul&gt;
+&lt;li&gt;&lt;em&gt;cv2.threshold()&lt;/em&gt; 함수에 전달하는 인자를 통해 threshold 알고리즘을 다양하게 변경할 수 있습니다.&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;ret, thresh1 = cv2.threshold(img, 127, 255, cv2.THRESH_BINARY)
+ret, thresh2 = cv2.threshold(img, 127, 255, cv2.THRESH_BINARY_INV)
+ret, thresh3 = cv2.threshold(img, 127, 255, cv2.THRESH_TRUNC)
+ret, thresh4 = cv2.threshold(img, 127, 255, cv2.THRESH_TOZERO)
+ret, thresh5 = cv2.threshold(img, 127, 255, cv2.THRESH_TOZERO_INV)
+
+plt.figure(figsize=(8, 12))
+plt.subplot(3, 2, 1)
+plt.imshow(thresh1, cmap=&#39;gray&#39;)
+plt.title(&#39;threshold lena&#39;)
+
+plt.subplot(3, 2, 2)
+plt.imshow(thresh2, cmap=&#39;gray&#39;)
+plt.title(&#39;inversed threshold lena&#39;)
+
+plt.subplot(3, 2, 3)
+plt.imshow(thresh3, cmap=&#39;gray&#39;)
+plt.title(&#39;truncated threshold lena&#39;)
+
+plt.subplot(3, 2, 4)
+plt.imshow(thresh4, cmap=&#39;gray&#39;)
+plt.title(&#39;zero threshold lena&#39;)
+
+plt.subplot(3, 2, 5)
+plt.imshow(thresh5, cmap=&#39;gray&#39;)
+plt.title(&#39;inversed zero threshold lena&#39;)
+
+plt.suptitle(&#39;Lena with different threshold algorithm(OpenCV)&#39;, size=15)
+plt.show()
+&lt;/code&gt;&lt;/pre&gt;
+
+
+
+
+  
+
+&lt;figure&gt;
+
+&lt;img src=&#34;/img/2.3%20Image%20Thresholding_13_0.png&#34; /&gt;
+
+
+&lt;/figure&gt;
+
+&lt;hr /&gt;
+
+&lt;h2 id=&#34;otsu-nbsp-algorithm&#34;&gt;Otsu&amp;nbsp;Algorithm&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Otsu algorithm(오츄 알고리즘)은 특정 threshold값을 기준으로 영상을 둘로 나눴을때, 두 영역의 명암 분포를 가장 균일하게 할 때 결과가 가장 좋을 것이다는 가정 하에 만들어진 알고리즘입니다.
+
+&lt;ul&gt;
+&lt;li&gt;여기서 균일함 이란, 두 영역 각각의 픽셀값의 분산을 의미하며, 그 차이가 가장 적게 하는 threshold 값이 오츄 알고리즘이 찾고자 하는 값입니다.&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;li&gt;위에 기술한 목적에 따라, 알고리즘에서는 특정 Threshold T를 기준으로 영상을 분할하였을 때, 양쪽 영상의 분산의 weighted sum이 가장 작게 하는 T값을 반복적으로 계산해가며 찾습니다.
+
+&lt;ul&gt;
+&lt;li&gt;weight는 각 영역의 넓이로 정합니다.&lt;/li&gt;
+&lt;li&gt;어떤 연산을 어떻게 반복하는지에 대한 내용이 아래 수식에 자세히 나와있습니다.&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;$T = argmin_{t\subseteq {1,\cdots,L-1}} v_{within}(t)
+\\&lt;br /&gt;
+v_{within}(t) = w_{0}(t)v_{0}(t) + w_{1}(t)v_{1}(t)
+\\&lt;br /&gt;
+\begin{align}
+&amp;amp; w_{0}(t) = \Sigma_{i=0}^{t} \hat h(i),\hspace{2cm} &amp;amp;&amp;amp; w_{1}(t) = \Sigma_{i=t+1}^{L-1} \hat h(i)\\&lt;br /&gt;
+&amp;amp; \mu_{0}(t)=\frac{1}{w_{0}(t)}\Sigma_{i=0}^{t}i\hat h(i) &amp;amp;&amp;amp; \mu_{1}(t)=\frac{1}{w_{1}(t)}\Sigma_{i=t+1}^{L-1}i\hat h(i)\\&lt;br /&gt;
+&amp;amp; v_{0}(t) = \frac{1}{w_{0}(t)}\Sigma_{i=0}^{t}i\hat h(i)(i-\mu_{0}(t))^2 &amp;amp;&amp;amp; v_{1}(t) = \frac{1}{w_{1}(t)}\Sigma_{i=t+1}^{L-1}i\hat h(i)(i-\mu_{1}(t))^2\\&lt;br /&gt;
+\end{align}
+$&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;$w_{0}(t), w_{1}(t)$는 threshold 값으로 결정된 흑색 영역과 백색 영역의 크기를 각각 나타냅니다.&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;$v_{0}(t), v_{1}(t)$은 두 영역의 분산을 뜻합니다.&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;위 수식을 그대로 적용하면 시간복잡도가 $\Theta(L^{2})$이므로 실제로 사용하기 매우 어려워집니다.&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;그러나, $\mu와 v$가 영상에 대해 한번만 계산하고 나면 상수처럼 취급된다는 사실에 착안하여 다음 알고리즘이 완성되었습니다.&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;$
+T = argmax_{t\subseteq{0,1,\cdots,L-1}}v_{between}(t)\\&lt;br /&gt;
+v_{between}(t)=w_{0}(t)(1-w_{0}(t))(\mu_{0}(t)-\mu_{1}(t))^2\\&lt;br /&gt;
+\mu = \Sigma_{i=0}^{L-1}i\hat h(i)\\&lt;br /&gt;
+초깃값(t=0):w_{0}(0)=\hat h(0), \mu_{0}(0)=0\\&lt;br /&gt;
+순환식(t&amp;gt;0):\\&lt;br /&gt;
+\begin{align}
+\hspace{1cm}&amp;amp; w_{0}(t)=w_{0}(t-1)+\hat h(t)\\&lt;br /&gt;
+&amp;amp; \mu_{0}(t)=\frac{w_{0}(t-1)\mu_{0}(t-1)+t\hat h(t)}{w_{0}(t)}\\&lt;br /&gt;
+&amp;amp; \mu_{1}(t)=\frac{\mu-w_{0}(t)\mu_{0}(t)}{1-w_{0}(t)}\\&lt;br /&gt;
+\end{align}
+$&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;위 순환식을 t에 대하여 수행하여 가장 큰$v_{between}$를 갖도록 하는 $t$를 최종 threshold T로 사용합니다.&lt;/li&gt;
+&lt;li&gt;이와 같은 알고리즘이 OpenCV의 threshold함수에 구현되어있으며, &lt;em&gt;&amp;lsquo;cv2.THRESH_OTSU&amp;rsquo;&lt;/em&gt; 파라미터를 사용하면 적용됩니다.아래와 같이 사용하면 됩니다.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;plt.figure(figsize=(8, 4))
+ret, th = cv2.threshold(img, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+
+plt.subplot(1, 2, 1)
+plt.imshow(img, cmap=&#39;gray&#39;)
+plt.title(&#39;Gray Lena&#39;)
+
+plt.subplot(1, 2, 2)
+plt.imshow(th, cmap=&#39;gray&#39;)
+plt.title(&#39;Otsu Lena&#39;)
+
+plt.suptitle(&#39;Lena with Otsu threshold value&#39;, size=15)
+plt.show()
+&lt;/code&gt;&lt;/pre&gt;
+
+
+
+
+  
+
+&lt;figure&gt;
+
+&lt;img src=&#34;/img/2.3%20Image%20Thresholding_20_0.png&#34; /&gt;
+
+
+&lt;/figure&gt;
+
+&lt;hr /&gt;
+
+&lt;h2 id=&#34;blob-nbsp-labeling&#34;&gt;Blob&amp;nbsp;labeling&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;Threshold를 통해 할 수 있는 일은 그야말로 무궁무진한데, 그 중 하나로 이미지 분할(image segmentation)을 들 수 있습니다.&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;만일 threshold 등의 알고리즘을 이용하여 특정 목적에 따라 영상을 분할할 수 있다면(e.g. 사람 손 or 도로의 차선)
+1로 정해진 픽셀끼리 하나의 object라고 생각할 수 있을것이고, 우리는 이 object를 묶어서 사용하고 싶게 될 것입니다.&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;서로 다른 object인지를 판단하기 위하여 &lt;strong&gt;픽셀의 연결성&lt;/strong&gt; &lt;a href=&#34;#ref_2&#34;&gt;[2]&lt;/a&gt; 을 고려한 알고리즘을 수행하고 각기 다른 label을 할당하는데, 이를 &lt;strong&gt;blob labeling&lt;/strong&gt;이라 합니다.&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;&lt;strong&gt;Blob labeling&lt;/strong&gt;을 하면 개별 object에 대해 각각 접근하여 우리가 하고싶은 다양한 영상처리를 개별적으로 적용할 수 있게 되니, 활용도가 아주 높은 기능입니다.&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;본 예제에서는 blob labeling에 대한 개념적인 소개와 OpenCV에 구현된 함수의 간단한 사용법만을 확인하겠습니다. &lt;a href=&#34;#ref_3&#34;&gt;[3]&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;직관적으로 원의 형상을 띄는 위치에 하나의 blob을 의미하는 파랑색 동그라미를 생성하는 모습입니다.&lt;/li&gt;
+&lt;li&gt;잘못된 위치에 그려진 blob이 눈에 띄는데요, 이와 같은 결과를 parameter를 통해 handling하는 내용에 대해서 차후 다가올 주제인 Image Segmentation에서 확인하겠습니다.&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;ret, coin_img = cv2.threshold(coin, 200, 255, cv2.THRESH_BINARY_INV)
+
+params = cv2.SimpleBlobDetector_Params()
+params.minThreshold = 10;
+params.maxThreshold = 255;
+params.filterByArea = False
+params.filterByCircularity = False
+params.filterByConvexity = False
+params.filterByInertia = False
+
+detector = cv2.SimpleBlobDetector_create(params) # Blob detector 선언
+keypoints = detector.detect(coin_img)  # Blob labeling 수행
+im_with_keypoints = \
+cv2.drawKeypoints(coin_img, keypoints, np.array([]), (0, 0, 255),
+                  cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)  # 원본 이미지에 찾은 blob 그리기
+
+plt.figure(figsize=(15,15))
+plt.imshow(im_with_keypoints)
+plt.title(&#39;Coin keypoint&#39;, size=15)
+plt.show()
+&lt;/code&gt;&lt;/pre&gt;
+
+
+
+
+  
+
+&lt;figure&gt;
+
+&lt;img src=&#34;/img/2.3%20Image%20Thresholding_23_0.png&#34; /&gt;
+
+
+&lt;/figure&gt;
+
+&lt;hr /&gt;
+
+&lt;h3 id=&#34;reference&#34;&gt;Reference&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;[1] 오일석, 컴퓨터 비전, 2014, pp. 67-75
+&lt;a id=&#34;ref_2&#34;&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;[2] &amp;lsquo;Pixel connectivity&amp;rsquo;, Wikipedia. 2019 [Online]. Available: &lt;a href=&#34;https://en.wikipedia.org/wiki/Pixel_connectivity&#34; target=&#34;_blank&#34;&gt;https://en.wikipedia.org/wiki/Pixel_connectivity&lt;/a&gt;
+&lt;a id=&#34;ref_3&#34;&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;[3] Satya Mallick., &amp;lsquo;Blob Detection Using OpenCV ( Python, C++ )&amp;rsquo;, &amp;lsquo;Learn OpenCV. 2019 [Online]. Available: &lt;a href=&#34;https://www.learnopencv.com/blob-detection-using-opencv-python-c/&#34; target=&#34;_blank&#34;&gt;https://www.learnopencv.com/blob-detection-using-opencv-python-c/&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 </description>
     </item>
