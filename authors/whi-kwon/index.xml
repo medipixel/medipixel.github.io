@@ -6,27 +6,27 @@
     <description>Recent content in whi-kwon on Medipixel</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 01 May 2019 22:22:17 +0900</lastBuildDate>
+    <lastBuildDate>Fri, 07 Jun 2019 12:00:00 +0900</lastBuildDate>
     
 	<atom:link href="/authors/whi-kwon/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
-      <title>Histogram</title>
-      <link>/post/histogram/</link>
-      <pubDate>Wed, 01 May 2019 22:22:17 +0900</pubDate>
-      
-      <guid>/post/histogram/</guid>
-      <description>Histogram using OpenCV</description>
-    </item>
-    
-    <item>
       <title>Image Thresholding</title>
       <link>/post/image-thresholding/</link>
-      <pubDate>Wed, 01 May 2019 22:22:17 +0900</pubDate>
+      <pubDate>Fri, 07 Jun 2019 12:00:00 +0900</pubDate>
       
       <guid>/post/image-thresholding/</guid>
       <description>Image threshold using OpenCV</description>
+    </item>
+    
+    <item>
+      <title>Histogram</title>
+      <link>/post/histogram/</link>
+      <pubDate>Fri, 31 May 2019 12:00:00 +0900</pubDate>
+      
+      <guid>/post/histogram/</guid>
+      <description>Histogram using OpenCV</description>
     </item>
     
     <item>
@@ -41,7 +41,7 @@
     <item>
       <title>Posts</title>
       <link>/post/</link>
-      <pubDate>Wed, 01 May 2019 22:22:17 +0900</pubDate>
+      <pubDate>Fri, 07 Jun 2019 12:00:00 +0900</pubDate>
       
       <guid>/post/</guid>
       <description></description>
