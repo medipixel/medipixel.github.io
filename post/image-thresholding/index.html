@@ -87,7 +87,7 @@
   
   
   
-  <link rel="stylesheet" href="/css/academic.min.6a8804fae7a305c3da7b642ff90ede5e.css">
+  <link rel="stylesheet" href="/css/academic.min.d29bf38748ecd02e19c0ef7512d213c5.css">
 
   
 
@@ -114,7 +114,7 @@
   
   <meta property="og:site_name" content="Medipixel">
   <meta property="og:url" content="/post/image-thresholding/">
-  <meta property="og:title" content="2.3. Image Thresholding | Medipixel">
+  <meta property="og:title" content="Image Thresholding | Medipixel">
   <meta property="og:description" content="Image threshold using OpenCV"><meta property="og:image" content="/img/icon-192.png">
   <meta property="og:locale" content="en-us">
   
@@ -127,7 +127,7 @@
 
   
 
-  <title>2.3. Image Thresholding | Medipixel</title>
+  <title>Image Thresholding | Medipixel</title>
 
 </head>
 <body id="top" data-spy="scroll" data-target="#TableOfContents" data-offset="71" >
@@ -323,7 +323,7 @@
   
   
 <div class="article-container pt-3">
-  <h1 itemprop="name">2.3. Image Thresholding</h1>
+  <h1 itemprop="name">Image Thresholding</h1>
 
   
 
@@ -450,6 +450,15 @@
 
 <hr />
 
+<h2 id="introduction">Introduction</h2>
+
+<ul>
+<li>OpenCV와 Python으로 Image processing을 알아봅시다.</li>
+<li>이 글에서는 Image thresholding을 간단히 알아보고, 어떻게 응용되는지 Blob labeling예제를 통해 확인하겠습니다.</li>
+</ul>
+
+<hr />
+
 <h2 id="import-libraries">Import Libraries</h2>
 
 <pre><code class="language-python">import os
@@ -463,15 +472,13 @@ import matplotlib
 import numpy as np
 
 print(&quot;Python version : &quot;, python_version())
-print(&quot;Opencv version : &quot;, cv2.__version__)
+print(&quot;OpenCV version : &quot;, cv2.__version__)
 matplotlib.rcParams['figure.figsize'] = (4.0, 4.0)
 </code></pre>
 
 <pre><code>Python version :  3.6.7
-Opencv version :  3.4.5
+OpenCV version :  3.4.5
 </code></pre>
-
-<hr />
 
 <h2 id="data-load">Data load</h2>
 
@@ -487,8 +494,6 @@ ret, coin = cv2.threshold(coin_img, 240, 255, cv2.THRESH_BINARY_INV)
 coin = cv2.dilate(coin, mask, iterations=1)
 coin = cv2.erode(coin, mask, iterations=6)
 </code></pre>
-
-<hr />
 
 <h2 id="data-description">Data description</h2>
 
@@ -521,7 +526,7 @@ plt.show()
 
 <figure>
 
-<img src="/img/2.3%20Image%20Thresholding_6_0.png" />
+<img src="/img/Image-Thresholding_7_0.png" />
 
 
 </figure>
@@ -579,7 +584,7 @@ plt.show()
 
 <figure>
 
-<img src="/img/2.3%20Image%20Thresholding_10_0.png" />
+<img src="/img/Image-Thresholding_11_0.png" />
 
 
 </figure>
@@ -588,10 +593,10 @@ plt.show()
 
 <ul>
 <li>위에서 numpy를 이용했다면, 이번엔 OpenCV 내장 함수를 이용하여 image threshold를 해보겠습니다.</li>
-<li>OpenCV 함수로는 보다 편리하게 다양한 결과물을 만들어낼 수 있습니다.
+<li>OpenCV 함수를 이용하면 numpy로 작성하는 것 보다 편리하게 다양한 결과물을 만들어낼 수 있습니다.
 
 <ul>
-<li><em>cv2.threshold()</em> 함수에 전달하는 인자를 통해 threshold 알고리즘을 다양하게 변경할 수 있습니다.</li>
+<li><code>cv2.threshold()</code> 함수에 전달하는 인자를 통해 threshold 알고리즘을 다양하게 변경할 수 있습니다.</li>
 </ul></li>
 </ul>
 
@@ -633,7 +638,7 @@ plt.show()
 
 <figure>
 
-<img src="/img/2.3%20Image%20Thresholding_13_0.png" />
+<img src="/img/Image-Thresholding_14_0.png" />
 
 
 </figure>
@@ -648,51 +653,50 @@ plt.show()
 <ul>
 <li>여기서 균일함 이란, 두 영역 각각의 픽셀값의 분산을 의미하며, 그 차이가 가장 적게 하는 threshold 값이 오츄 알고리즘이 찾고자 하는 값입니다.</li>
 </ul></li>
-<li>위에 기술한 목적에 따라, 알고리즘에서는 특정 Threshold T를 기준으로 영상을 분할하였을 때, 양쪽 영상의 분산의 weighted sum이 가장 작게 하는 T값을 반복적으로 계산해가며 찾습니다.
+
+<li><p>위에 기술한 목적에 따라, 알고리즘에서는 특정 Threshold $T$를 기준으로 영상을 분할하였을 때, 양쪽 영상의 분산의 weighted sum이 가장 작게 하는 $T$값을 반복적으로 계산해가며 찾습니다.</p>
 
 <ul>
 <li>weight는 각 영역의 넓이로 정합니다.</li>
-<li>어떤 연산을 어떻게 반복하는지에 대한 내용이 아래 수식에 자세히 나와있습니다.</li>
-</ul></li>
-</ul>
-
-<p>$T = argmin_{t\subseteq {1,\cdots,L-1}} v_{within}(t)
-\\<br />
-v_{within}(t) = w_{0}(t)v_{0}(t) + w_{1}(t)v_{1}(t)
-\\<br />
+<li>어떤 연산을 어떻게 반복하는지에 대한 내용이 아래 수식에 자세히 나와있습니다. <br>
+$$
 \begin{align}
+&amp; T = argmin_{t\subseteq {1,\cdots,L-1}} v_{within}(t)
+\\<br />
+&amp; v_{within}(t) = w_{0}(t)v_{0}(t) + w_{1}(t)v_{1}(t)
+\\<br />
+\\<br />
 &amp; w_{0}(t) = \Sigma_{i=0}^{t} \hat h(i),\hspace{2cm} &amp;&amp; w_{1}(t) = \Sigma_{i=t+1}^{L-1} \hat h(i)\\<br />
 &amp; \mu_{0}(t)=\frac{1}{w_{0}(t)}\Sigma_{i=0}^{t}i\hat h(i) &amp;&amp; \mu_{1}(t)=\frac{1}{w_{1}(t)}\Sigma_{i=t+1}^{L-1}i\hat h(i)\\<br />
 &amp; v_{0}(t) = \frac{1}{w_{0}(t)}\Sigma_{i=0}^{t}i\hat h(i)(i-\mu_{0}(t))^2 &amp;&amp; v_{1}(t) = \frac{1}{w_{1}(t)}\Sigma_{i=t+1}^{L-1}i\hat h(i)(i-\mu_{1}(t))^2\\<br />
 \end{align}
-$</p>
+$$</li>
+</ul></li>
 
-<ul>
-<li>$w_{0}(t), w_{1}(t)$는 threshold 값으로 결정된 흑색 영역과 백색 영역의 크기를 각각 나타냅니다.</li>
+<li><p>$w_{0}(t), w_{1}(t)$는 threshold 값으로 결정된 흑색 영역과 백색 영역의 크기를 각각 나타냅니다.</p></li>
 
 <li><p>$v_{0}(t), v_{1}(t)$은 두 영역의 분산을 뜻합니다.</p></li>
 
 <li><p>위 수식을 그대로 적용하면 시간복잡도가 $\Theta(L^{2})$이므로 실제로 사용하기 매우 어려워집니다.</p></li>
 
-<li><p>그러나, $\mu와 v$가 영상에 대해 한번만 계산하고 나면 상수처럼 취급된다는 사실에 착안하여 다음 알고리즘이 완성되었습니다.</p></li>
-</ul>
-
-<p>$
-T = argmax_{t\subseteq{0,1,\cdots,L-1}}v_{between}(t)\\<br />
-v_{between}(t)=w_{0}(t)(1-w_{0}(t))(\mu_{0}(t)-\mu_{1}(t))^2\\<br />
-\mu = \Sigma_{i=0}^{L-1}i\hat h(i)\\<br />
-초깃값(t=0):w_{0}(0)=\hat h(0), \mu_{0}(0)=0\\<br />
-순환식(t&gt;0):\\<br />
+<li><p>그러나, $\mu$와 $v$가 영상에 대해 한번만 계산하고 나면 상수처럼 취급된다는 사실에 착안하여 다음 알고리즘이 완성되었습니다. <br>
+$$
 \begin{align}
-\hspace{1cm}&amp; w_{0}(t)=w_{0}(t-1)+\hat h(t)\\<br />
-&amp; \mu_{0}(t)=\frac{w_{0}(t-1)\mu_{0}(t-1)+t\hat h(t)}{w_{0}(t)}\\<br />
-&amp; \mu_{1}(t)=\frac{\mu-w_{0}(t)\mu_{0}(t)}{1-w_{0}(t)}\\<br />
+&amp;T = argmax_{t\subseteq{0,1,\cdots,L-1}}v_{between}(t)\\<br />
+&amp;v_{between}(t)=w_{0}(t)(1-w_{0}(t))(\mu_{0}(t)-\mu_{1}(t))^2\\<br />
+&amp;\mu = \Sigma_{i=0}^{L-1}i\hat h(i)\\<br />
+\\<br />
+&amp;\text{초깃값}(t=0):w_{0}(0)=\hat h(0),\ \mu_{0}(0)=0\\<br />
+&amp;\text{순환식}(t&gt;0):\\<br />
+&amp; \hspace{1cm} w_{0}(t)=w_{0}(t-1)+\hat h(t)\\<br />
+&amp; \hspace{1cm} \mu_{0}(t)=\frac{w_{0}(t-1)\mu_{0}(t-1)+t\hat h(t)}{w_{0}(t)}\\<br />
+&amp; \hspace{1cm} \mu_{1}(t)=\frac{\mu-w_{0}(t)\mu_{0}(t)}{1-w_{0}(t)}\\<br />
 \end{align}
-$</p>
+$$</p></li>
 
-<ul>
-<li>위 순환식을 t에 대하여 수행하여 가장 큰$v_{between}$를 갖도록 하는 $t$를 최종 threshold T로 사용합니다.</li>
-<li>이와 같은 알고리즘이 OpenCV의 threshold함수에 구현되어있으며, <em>&lsquo;cv2.THRESH_OTSU&rsquo;</em> 파라미터를 사용하면 적용됩니다.아래와 같이 사용하면 됩니다.</li>
+<li><p>위 순환식을 $t$에 대하여 수행하여 가장 큰$v_{between}$를 갖도록 하는 $t$를 최종 threshold $T$로 사용합니다.</p></li>
+
+<li><p>이와 같은 알고리즘이 OpenCV의 threshold함수에 구현되어있으며, <code>cv2.THRESH_OTSU</code> 파라미터를 아래 코드와 같이 사용하면 적용이 됩니다.</p></li>
 </ul>
 
 <pre><code class="language-python">plt.figure(figsize=(8, 4))
@@ -717,7 +721,7 @@ plt.show()
 
 <figure>
 
-<img src="/img/2.3%20Image%20Thresholding_20_0.png" />
+<img src="/img/Image-Thresholding_21_0.png" />
 
 
 </figure>
@@ -727,19 +731,19 @@ plt.show()
 <h2 id="blob-nbsp-labeling">Blob&nbsp;labeling</h2>
 
 <ul>
-<li><p>Threshold를 통해 할 수 있는 일은 그야말로 무궁무진한데, 그 중 하나로 이미지 분할(image segmentation)을 들 수 있습니다.</p>
+<li><p>Threshold를 통해 할 수 있는 일은 그야말로 무궁무진한데, 그 중 하나로 이미지 분할(image segmentation)을 예시로 들 수 있습니다.</p>
 
 <ul>
 <li>만일 threshold 등의 알고리즘을 이용하여 특정 목적에 따라 영상을 분할할 수 있다면(e.g. 사람 손 or 도로의 차선)
 1로 정해진 픽셀끼리 하나의 object라고 생각할 수 있을것이고, 우리는 이 object를 묶어서 사용하고 싶게 될 것입니다.</li>
 </ul></li>
 
-<li><p>서로 다른 object인지를 판단하기 위하여 <strong>픽셀의 연결성</strong> <a href="#ref_2">[2]</a> 을 고려한 알고리즘을 수행하고 각기 다른 label을 할당하는데, 이를 <strong>blob labeling</strong>이라 합니다.</p></li>
+<li><p>서로 다른 object인지를 판단하기 위하여 <strong>픽셀의 연결성</strong> <a href="https://en.wikipedia.org/wiki/Pixel_connectivity" target="_blank">[2]</a> 을 고려한 알고리즘을 수행하고 각기 다른 label을 할당하는데, 이를 <strong>Blob labeling</strong>이라 합니다.</p></li>
 
 <li><p><strong>Blob labeling</strong>을 하면 개별 object에 대해 각각 접근하여 우리가 하고싶은 다양한 영상처리를 개별적으로 적용할 수 있게 되니, 활용도가 아주 높은 기능입니다.</p>
 
 <ul>
-<li>본 예제에서는 blob labeling에 대한 개념적인 소개와 OpenCV에 구현된 함수의 간단한 사용법만을 확인하겠습니다. <a href="#ref_3">[3]</a></li>
+<li>본 예제에서는 blob labeling에 대한 개념적인 소개와 OpenCV에 구현된 함수의 간단한 사용법을 확인하겠습니다. <a href="https://www.learnopencv.com/blob-detection-using-opencv-python-c/" target="_blank">[3]</a></li>
 <li>직관적으로 원의 형상을 띄는 위치에 하나의 blob을 의미하는 파랑색 동그라미를 생성하는 모습입니다.</li>
 <li>잘못된 위치에 그려진 blob이 눈에 띄는데요, 이와 같은 결과를 parameter를 통해 handling하는 내용에 대해서 차후 다가올 주제인 Image Segmentation에서 확인하겠습니다.</li>
 </ul></li>
@@ -774,20 +778,27 @@ plt.show()
 
 <figure>
 
-<img src="/img/2.3%20Image%20Thresholding_23_0.png" />
+<img src="/img/Image-Thresholding_24_0.png" />
 
 
 </figure>
 
 <hr />
 
+<h2 id="conclusion">Conclusion</h2>
+
+<ul>
+<li>Image thresholding의 사용법과 다양한 응용방법, threshold 값을 선택해주는 Otsu 알고리즘을 알아보았습니다.</li>
+<li>마지막에 알아본 Blob labeling은 Image processing 분야 전반에 걸쳐 사용되는 곳이 아주 많으니 추후에 더 깊이 알아보는 시간을 갖겠습니다.</li>
+</ul>
+
+<hr />
+
 <h3 id="reference">Reference</h3>
 
 <ul>
-<li>[1] 오일석, 컴퓨터 비전, 2014, pp. 67-75
-<a id="ref_2"></a></li>
-<li>[2] &lsquo;Pixel connectivity&rsquo;, Wikipedia. 2019 [Online]. Available: <a href="https://en.wikipedia.org/wiki/Pixel_connectivity" target="_blank">https://en.wikipedia.org/wiki/Pixel_connectivity</a>
-<a id="ref_3"></a></li>
+<li>[1] 오일석, 컴퓨터 비전, 2014, pp. 67-75</li>
+<li>[2] &lsquo;Pixel connectivity&rsquo;, Wikipedia. 2019 [Online]. Available: <a href="https://en.wikipedia.org/wiki/Pixel_connectivity" target="_blank">https://en.wikipedia.org/wiki/Pixel_connectivity</a></li>
 <li>[3] Satya Mallick., &lsquo;Blob Detection Using OpenCV ( Python, C++ )&rsquo;, &lsquo;Learn OpenCV. 2019 [Online]. Available: <a href="https://www.learnopencv.com/blob-detection-using-opencv-python-c/" target="_blank">https://www.learnopencv.com/blob-detection-using-opencv-python-c/</a></li>
 </ul>
 
@@ -899,7 +910,7 @@ plt.show()
 	<div class="media author-card" itemscope itemtype="http://schema.org/Person">
 	  
 	  
-	  <img class="portrait mr-3" src="/author/whi-kwon/avatar_hu52a603635ecebd45650b162dadabb4e5_12861_250x250_fill_q90_lanczos_center.jpg" itemprop="image" alt="Avatar">
+	  <img class="portrait mr-3" src="/author/whi-kwon/avatar_hu9f99ec4f5e6ea5840aa975879b10ccd2_87452_250x250_fill_q90_lanczos_center.jpg" itemprop="image" alt="Avatar">
 	  
 	  <div class="media-body">
 	    <h5 class="card-title" itemprop="name"><a href="/authors/whi-kwon">Whi Kwon</a></h5>

@@ -6,22 +6,13 @@
     <description>Recent content in whi-kwon on Medipixel</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 30 May 2019 13:15:00 +0900</lastBuildDate>
+    <lastBuildDate>Wed, 01 May 2019 22:22:17 +0900</lastBuildDate>
     
 	<atom:link href="/authors/whi-kwon/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
-      <title>Anchor</title>
-      <link>/post/anchor-target/</link>
-      <pubDate>Thu, 30 May 2019 13:15:00 +0900</pubDate>
-      
-      <guid>/post/anchor-target/</guid>
-      <description>Anchor algorithm in MMDetection</description>
-    </item>
-    
-    <item>
-      <title>2.2 Histogram</title>
+      <title>Histogram</title>
       <link>/post/histogram/</link>
       <pubDate>Wed, 01 May 2019 22:22:17 +0900</pubDate>
       
@@ -30,7 +21,7 @@
     </item>
     
     <item>
-      <title>2.3. Image Thresholding</title>
+      <title>Image Thresholding</title>
       <link>/post/image-thresholding/</link>
       <pubDate>Wed, 01 May 2019 22:22:17 +0900</pubDate>
       
@@ -50,7 +41,7 @@
     <item>
       <title>Posts</title>
       <link>/post/</link>
-      <pubDate>Thu, 30 May 2019 13:15:00 +0900</pubDate>
+      <pubDate>Wed, 01 May 2019 22:22:17 +0900</pubDate>
       
       <guid>/post/</guid>
       <description></description>

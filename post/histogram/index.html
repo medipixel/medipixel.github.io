@@ -87,7 +87,7 @@
   
   
   
-  <link rel="stylesheet" href="/css/academic.min.6a8804fae7a305c3da7b642ff90ede5e.css">
+  <link rel="stylesheet" href="/css/academic.min.d29bf38748ecd02e19c0ef7512d213c5.css">
 
   
 
@@ -114,7 +114,7 @@
   
   <meta property="og:site_name" content="Medipixel">
   <meta property="og:url" content="/post/histogram/">
-  <meta property="og:title" content="2.2 Histogram | Medipixel">
+  <meta property="og:title" content="Histogram | Medipixel">
   <meta property="og:description" content="Histogram using OpenCV"><meta property="og:image" content="/img/icon-192.png">
   <meta property="og:locale" content="en-us">
   
@@ -127,7 +127,7 @@
 
   
 
-  <title>2.2 Histogram | Medipixel</title>
+  <title>Histogram | Medipixel</title>
 
 </head>
 <body id="top" data-spy="scroll" data-target="#TableOfContents" data-offset="71" >
@@ -323,7 +323,7 @@
   
   
 <div class="article-container pt-3">
-  <h1 itemprop="name">2.2 Histogram</h1>
+  <h1 itemprop="name">Histogram</h1>
 
   
 
@@ -367,7 +367,7 @@
   
   <span class="middot-divider"></span>
   <span class="article-reading-time">
-    3 min read
+    4 min read
   </span>
   
 
@@ -450,6 +450,15 @@
 
 <hr />
 
+<h2 id="introduction">Introduction</h2>
+
+<ul>
+<li>OpenCV와 python으로 Image processing을 알아봅시다.</li>
+<li>이 글은 첫 번째 posting으로, Image processing에서 Histogram이란 무엇인지에 대하여 알아보겠습니다.</li>
+</ul>
+
+<hr />
+
 <h2 id="import-libraries">Import Libraries</h2>
 
 <pre><code class="language-python">import os
@@ -464,15 +473,13 @@ import numpy as np
 
 
 print(&quot;Python version : &quot;, python_version())
-print(&quot;Opencv version : &quot;, cv2.__version__)
+print(&quot;OpenCV version : &quot;, cv2.__version__)
 matplotlib.rcParams['figure.figsize'] = (4.0, 4.0)
 </code></pre>
 
 <pre><code>Python version :  3.6.6
-Opencv version :  3.4.3
+OpenCV version :  3.4.3
 </code></pre>
-
-<hr />
 
 <h2 id="data-load">Data load</h2>
 
@@ -480,8 +487,6 @@ Opencv version :  3.4.3
 sample_image = 'lena_gray.jpg'
 img = cv2.imread(sample_image_path + sample_image, cv2.IMREAD_GRAYSCALE)
 </code></pre>
-
-<hr />
 
 <h2 id="data-description">Data description</h2>
 
@@ -506,7 +511,7 @@ plt.show()
 
 <figure>
 
-<img src="/img/2.2%20Histogram_6_0.png" />
+<img src="/img/Histogram_7_0.png" />
 
 
 </figure>
@@ -544,7 +549,7 @@ plt.show()
 
 <figure>
 
-<img src="/img/2.2%20Histogram_10_0.png" />
+<img src="/img/Histogram_11_0.png" />
 
 
 </figure>
@@ -561,7 +566,7 @@ plt.show()
     hist = cv2.calcHist([img], [0], None, [256], [0, 256])
     hist_norm = hist / (w * h)  # normalize
     plt.plot(hist_norm)
-    plt.title('Histogram of Lena, Opencv', size=15)
+    plt.title('Histogram of Lena, OpenCV', size=15)
 </code></pre>
 
 <pre><code class="language-python">plot_histogram_cv(img)
@@ -574,7 +579,7 @@ plt.show()
 
 <figure>
 
-<img src="/img/2.2%20Histogram_14_0.png" />
+<img src="/img/Histogram_15_0.png" />
 
 
 </figure>
@@ -582,10 +587,11 @@ plt.show()
 <ul>
 <li>OpenCV를 이용하면 함수 호출을 통해 간단하게 Histogram을 구할 수 있습니다.</li>
 <li>numpy로 구한 Histogram과 비교해 보면, 두 결과물이 완전히 동일한 것을 알 수 있습니다.</li>
-<li><strong>&lsquo;cv2.calcHist()&rsquo;</strong>를 수행하면 픽셀값 별 등장 횟수의 그래프를 얻고, 이를 normalize하여 최종적으로 Histogram을 얻게 됩니다.</li>
-<li><strong>&lsquo;cv2.calcHist()&rsquo;</strong>의 자세한 사용법은 Opencv 공식 tutorial page를 통해 확인할 수 있습니다. <a href="https://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_imgproc/py_histograms/py_histogram_begins/py_histogram_begins.html#histogram-calculation-in-opencv" target="_blank">[2]</a>
-&mdash;</li>
+<li><em>&lsquo;cv2.calcHist()&rsquo;</em> 를 수행하면 픽셀값 별 등장 횟수의 그래프를 얻고, 이를 normalize하여 최종적으로 Histogram을 얻게 됩니다.</li>
+<li><em>&lsquo;cv2.calcHist()&rsquo;</em> 의 자세한 사용법은 OpenCV 공식 tutorial page를 통해 확인할 수 있습니다. <a href="https://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_imgproc/py_histograms/py_histogram_begins/py_histogram_begins.html#histogram-calculation-in-opencv" target="_blank">[2]</a></li>
 </ul>
+
+<hr />
 
 <h2 id="histogram-nbsp-equalization">Histogram&nbsp;Equalization</h2>
 
@@ -623,7 +629,7 @@ plt.show()
 
 <figure>
 
-<img src="/img/2.2%20Histogram_18_0.png" />
+<img src="/img/Histogram_19_0.png" />
 
 
 </figure>
@@ -657,19 +663,15 @@ show_stacked_histogram(equ)
 
 <figure>
 
-<img src="/img/2.2%20Histogram_20_0.png" />
+<img src="/img/Histogram_21_0.png" />
 
 
 </figure>
 
 <ul>
 <li>OpenCV에 구현되어있는 cv2.equalizeHist()함수를 통해 평활화한 Lena의 Histogram입니다.</li>
-<li>이제 Histogram 누적치가 직선 형태라는 말이 확실하게 이해 되실 것 같습니다.</li>
-</ul>
-
-<hr />
-
-<ul>
+<li>이제 Histogram 누적치가 직선 형태라는 말이 확실하게 이해 되실 것 같습니다.
+&mdash;</li>
 <li>마지막으로 이렇게 변화시킨 이미지가 원본 이미지와 어떻게 다른지 확인해 보겠습니다.</li>
 </ul>
 
@@ -693,7 +695,7 @@ plt.show()
 
 <figure>
 
-<img src="/img/2.2%20Histogram_22_0.png" />
+<img src="/img/Histogram_23_0.png" />
 
 
 </figure>
@@ -706,6 +708,15 @@ plt.show()
 <li>히스토그램 평활화를 통해 모든 픽셀값이 동일한 비율로 등장하게끔 수정하여 이와 같은 변화가 일어났다고 볼 수 있습니다.</li>
 </ul></li>
 <li>히스토그램 평활화에 대한 자세한 내용은 마찬가지로 OpenCV 공식 tutorial page를 통해 확인할 수 있습니다. <a href="https://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_imgproc/py_histograms/py_histogram_equalization/py_histogram_equalization.html#histogram-equalization" target="_blank">[3]</a></li>
+</ul>
+
+<hr />
+
+<h2 id="conclusion">Conclusion</h2>
+
+<ul>
+<li>이미지 분석의 기초인 히스토그램에 대하여 알아보았습니다.</li>
+<li>또한 이미지 처리 기법중 하나인 히스토그램 평활화를 알아보았으며, 실질적으로 히스토그램에 어떤 변화를 주는지 확인할 수 있었습니다.</li>
 </ul>
 
 <hr />
@@ -826,7 +837,7 @@ plt.show()
 	<div class="media author-card" itemscope itemtype="http://schema.org/Person">
 	  
 	  
-	  <img class="portrait mr-3" src="/author/whi-kwon/avatar_hu52a603635ecebd45650b162dadabb4e5_12861_250x250_fill_q90_lanczos_center.jpg" itemprop="image" alt="Avatar">
+	  <img class="portrait mr-3" src="/author/whi-kwon/avatar_hu9f99ec4f5e6ea5840aa975879b10ccd2_87452_250x250_fill_q90_lanczos_center.jpg" itemprop="image" alt="Avatar">
 	  
 	  <div class="media-body">
 	    <h5 class="card-title" itemprop="name"><a href="/authors/whi-kwon">Whi Kwon</a></h5>
