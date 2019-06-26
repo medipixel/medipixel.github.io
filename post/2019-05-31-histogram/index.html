@@ -1,0 +1,1055 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="generator" content="Source Themes Academic 4.3.0">
+
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+  
+  
+    
+  
+  <meta name="description" content="Histogram using OpenCV">
+
+  
+  <link rel="alternate" hreflang="en-us" href="/post/2019-05-31-histogram/">
+
+  
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+  
+  <meta name="theme-color" content="#3f51b5">
+  
+
+  
+  
+  
+  
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/academicons/1.8.6/css/academicons.min.css" integrity="sha256-uFVgMKfistnJAfoCUQigIl+JfUaP47GrRKjf6CTPVmw=" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.0/css/all.css" integrity="sha384-aOkxzJ5uQz7WBObEZcHvV5JvRW3TUc2rNPA7pe3AwnsUohiw1Vj2Rgx2KSOkF5+h" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.css" integrity="sha256-ygkqlh3CYSUri3LhQxzdcm0n1EQvH2Y+U5S2idbLtxs=" crossorigin="anonymous">
+
+    
+    
+    
+      
+    
+    
+      
+      
+        
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/github.min.css" crossorigin="anonymous" title="hl-light">
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/dracula.min.css" crossorigin="anonymous" title="hl-dark" disabled>
+        
+      
+    
+
+    
+
+    
+
+  
+
+  
+  
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Montserrat:400,700|Roboto:400,400italic,700|Roboto+Mono">
+  
+
+  
+  
+  
+  <link rel="stylesheet" href="/css/academic.min.4fc3a454da211fdddd30085a99421de1.css">
+
+  
+
+  
+  
+  
+
+  
+
+  <link rel="manifest" href="/site.webmanifest">
+  <link rel="icon" type="image/png" href="/img/icon.png">
+  <link rel="apple-touch-icon" type="image/png" href="/img/icon-192.png">
+
+  <link rel="canonical" href="/post/2019-05-31-histogram/">
+
+  
+  
+  
+  
+    
+    
+  
+  <meta property="twitter:card" content="summary">
+  
+  <meta property="og:site_name" content="Medipixel">
+  <meta property="og:url" content="/post/2019-05-31-histogram/">
+  <meta property="og:title" content="[Tutorial] Histogram | Medipixel">
+  <meta property="og:description" content="Histogram using OpenCV"><meta property="og:image" content="/img/icon-192.png">
+  <meta property="og:locale" content="en-us">
+  
+  <meta property="article:published_time" content="2019-05-31T12:00:00&#43;09:00">
+  
+  <meta property="article:modified_time" content="2019-05-31T12:00:00&#43;09:00">
+  
+
+  
+
+  
+
+  <title>[Tutorial] Histogram | Medipixel</title>
+
+</head>
+<body id="top" data-spy="scroll" data-target="#TableOfContents" data-offset="71" >
+  <aside class="search-results" id="search">
+  <div class="container">
+    <section class="search-header">
+
+      <div class="row no-gutters justify-content-between mb-3">
+        <div class="col-6">
+          <h1>Search</h1>
+        </div>
+        <div class="col-6 col-search-close">
+          <a class="js-search" href="#"><i class="fas fa-times-circle text-muted" aria-hidden="true"></i></a>
+        </div>
+      </div>
+
+      <div id="search-box">
+        
+        <input name="q" id="search-query" placeholder="Search..." autocapitalize="off"
+        autocomplete="off" autocorrect="off" role="textbox" spellcheck="false" type="search">
+        
+      </div>
+
+    </section>
+    <section class="section-search-results">
+
+      <div id="search-hits">
+        
+      </div>
+
+    </section>
+  </div>
+</aside>
+
+
+
+<nav class="navbar navbar-light fixed-top navbar-expand-lg py-0" id="navbar-main">
+  <div class="container">
+
+    
+      <a class="navbar-brand" href="/">Medipixel</a>
+      
+      <button type="button" class="navbar-toggler" data-toggle="collapse"
+              data-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+        <span><i class="fas fa-bars"></i></span>
+      </button>
+      
+
+    
+    <div class="collapse navbar-collapse" id="navbar">
+
+      
+      
+      <ul class="navbar-nav mr-auto">
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+        
+        
+        
+        
+        
+          
+          
+          
+            
+          
+          
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/#posts">
+            
+            <span>Posts</span>
+            
+          </a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+        
+        
+        
+        
+        
+          
+          
+          
+            
+          
+          
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/#contact">
+            
+            <span>Contact</span>
+            
+          </a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+
+        
+        
+        
+        
+        
+        
+
+        <li class="nav-item">
+          <a class="nav-link  active" href="/">
+            
+            <span></span>
+            
+          </a>
+        </li>
+
+        
+        
+
+      
+      </ul>
+      <ul class="navbar-nav ml-auto">
+      
+
+        
+
+        
+        <li class="nav-item">
+          <a class="nav-link js-search" href="#"><i class="fas fa-search" aria-hidden="true"></i></a>
+        </li>
+        
+
+        
+
+        
+        <li class="nav-item">
+          <a class="nav-link js-dark-toggle" href="#"><i class="fas fa-moon" aria-hidden="true"></i></a>
+        </li>
+        
+
+      </ul>
+
+    </div>
+  </div>
+</nav>
+
+
+<article class="article" itemscope itemtype="http://schema.org/Article">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+  
+  
+<div class="article-container pt-3">
+  <h1 itemprop="name">[Tutorial] Histogram</h1>
+
+  
+
+  
+    
+
+
+
+<meta content="2019-05-31 12:00:00 &#43;0900 KST" itemprop="datePublished">
+<meta content="2019-05-31 12:00:00 &#43;0900 KST" itemprop="dateModified">
+
+<div class="article-metadata">
+
+  
+  
+  
+  
+  <div>
+    
+
+
+
+  <span itemprop="author name" itemtype="http://schema.org/Person"><a href="/authors/young-kim/">young-kim</a></span>, <span itemprop="author name" itemtype="http://schema.org/Person"><a href="/authors/whi-kwon/">whi-kwon</a></span>
+
+  </div>
+  
+  
+
+  
+  <span class="article-date">
+    
+    
+      
+    
+    <time>May 31, 2019</time>
+  </span>
+  
+
+  
+
+  
+  <span class="middot-divider"></span>
+  <span class="article-reading-time">
+    4 min read
+  </span>
+  
+
+  
+  
+
+  
+  
+
+  
+    
+<div class="share-box" aria-hidden="true">
+  <ul class="share">
+    <li>
+      <a class="twitter"
+         href="https://twitter.com/intent/tweet?text=&amp;url="
+         target="_blank" rel="noopener">
+        <i class="fab fa-twitter"></i>
+      </a>
+    </li>
+    <li>
+      <a class="facebook"
+         href="https://www.facebook.com/sharer.php?u="
+         target="_blank" rel="noopener">
+        <i class="fab fa-facebook-f"></i>
+      </a>
+    </li>
+    <li>
+      <a class="linkedin"
+         href="https://www.linkedin.com/shareArticle?mini=true&amp;url=&amp;title="
+         target="_blank" rel="noopener">
+        <i class="fab fa-linkedin-in"></i>
+      </a>
+    </li>
+    <li>
+      <a class="weibo"
+         href="http://service.weibo.com/share/share.php?url=&amp;title="
+         target="_blank" rel="noopener">
+        <i class="fab fa-weibo"></i>
+      </a>
+    </li>
+    <li>
+      <a class="email"
+         href="mailto:?subject=&amp;body=">
+        <i class="fas fa-envelope"></i>
+      </a>
+    </li>
+  </ul>
+</div>
+
+
+  
+
+</div>
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+</div>
+
+
+
+  <div class="article-container">
+
+    <div class="article-style" itemprop="articleBody">
+      
+
+<hr />
+
+<h2 id="introduction">Introduction</h2>
+
+<ul>
+<li>OpenCV와 python으로 Image processing을 알아봅시다.</li>
+<li>이 글은 첫 번째 posting으로, Image processing에서 Histogram이란 무엇인지에 대하여 알아보겠습니다.</li>
+</ul>
+
+<hr />
+
+<h2 id="import-libraries">Import Libraries</h2>
+
+<pre><code class="language-python">import os
+import sys
+import math
+from platform import python_version
+
+import cv2
+import matplotlib
+import matplotlib.pyplot as plt
+import numpy as np
+
+
+print(&quot;Python version : &quot;, python_version())
+print(&quot;OpenCV version : &quot;, cv2.__version__)
+matplotlib.rcParams['figure.figsize'] = (4.0, 4.0)
+</code></pre>
+
+<pre><code>Python version :  3.6.6
+OpenCV version :  3.4.3
+</code></pre>
+
+<h2 id="data-load">Data load</h2>
+
+<pre><code class="language-python">sample_image_path = '../image/'
+sample_image = 'lena_gray.jpg'
+img = cv2.imread(sample_image_path + sample_image, cv2.IMREAD_GRAYSCALE)
+</code></pre>
+
+<h2 id="data-description">Data description</h2>
+
+<ul>
+<li>본 예제에서 사용할 데이터는 아래와 같습니다.
+
+<ul>
+<li>거의 대부분의 OpenCV 예제에서 볼 수 있는 Lena 입니다.</li>
+<li>단순한 특징의 배경과 복잡한 특징의 인물이 함께 존재하여 다양한 condition을 test하기 좋은 data로 널리 알려져 있습니다.</li>
+</ul></li>
+</ul>
+
+<pre><code class="language-python">plt.imshow(img, cmap='gray')
+plt.title('Lena')
+plt.show()
+</code></pre>
+
+
+
+
+  
+
+<figure>
+
+<img src="/img/Histogram_7_0.png" />
+
+
+</figure>
+
+<hr />
+
+<h2 id="histogram">Histogram</h2>
+
+<ul>
+<li>Histogram이란, 이미지에서 특정 픽셀값의 등장 빈도를 전체 픽셀 갯수 대비 비율로 나타낸 그래프 입니다.</li>
+<li>이미지의 전체적인 명암 분포를 한 눈에 확인할 수 있습니다.</li>
+<li>두 가지 예제 코드를 통해 Histogram에 대해 알아보겠습니다.</li>
+</ul>
+
+<pre><code class="language-python">def plot_histogram_npy(img):
+    w, h = img.shape
+    w, h = int(w), int(h)
+    hist_cnt = np.zeros(255)
+    hist = np.zeros(255)
+    for j in range(h):
+        for i in range(w):
+            hist_cnt[img[j, i]] += 1
+    hist = hist_cnt / (w * h)
+    plt.plot(hist)
+    plt.title('Histogram of Lena, numpy', size=15)
+</code></pre>
+
+<pre><code class="language-python">plot_histogram_npy(img)
+</code></pre>
+
+
+
+
+  
+
+<figure>
+
+<img src="/img/Histogram_11_0.png" />
+
+
+</figure>
+
+<ul>
+<li>OpenCV등을 이용하지 않고 numpy만을 이용하여 구한 Lena의 Histogram 입니다.</li>
+<li>이미지에서 개별 픽셀값이 몇 번씩 등장하는지 확인하고 전체 픽셀 수로 normalize하여 Histogram을 얻게 됩니다.</li>
+</ul>
+
+<hr />
+
+<pre><code class="language-python">def plot_histogram_cv(img):
+    w, h = img.shape
+    hist = cv2.calcHist([img], [0], None, [256], [0, 256])
+    hist_norm = hist / (w * h)  # normalize
+    plt.plot(hist_norm)
+    plt.title('Histogram of Lena, OpenCV', size=15)
+</code></pre>
+
+<pre><code class="language-python">plot_histogram_cv(img)
+</code></pre>
+
+
+
+
+  
+
+<figure>
+
+<img src="/img/Histogram_15_0.png" />
+
+
+</figure>
+
+<ul>
+<li>OpenCV를 이용하면 함수 호출을 통해 간단하게 Histogram을 구할 수 있습니다.</li>
+<li>numpy로 구한 Histogram과 비교해 보면, 두 결과물이 완전히 동일한 것을 알 수 있습니다.</li>
+<li><em>&lsquo;cv2.calcHist()&rsquo;</em> 를 수행하면 픽셀값 별 등장 횟수의 그래프를 얻고, 이를 normalize하여 최종적으로 Histogram을 얻게 됩니다.</li>
+<li><em>&lsquo;cv2.calcHist()&rsquo;</em> 의 자세한 사용법은 OpenCV 공식 tutorial page를 통해 확인할 수 있습니다. <a href="https://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_imgproc/py_histograms/py_histogram_begins/py_histogram_begins.html#histogram-calculation-in-opencv" target="_blank">[2]</a></li>
+</ul>
+
+<hr />
+
+<h2 id="histogram-nbsp-equalization">Histogram&nbsp;Equalization</h2>
+
+<ul>
+<li>Histogram Equalization(히스토그램 평활화)란, pixel값 0부터 255까지의 누적치가 직선 형태가 되도록 만드는 이미지 처리 기법 입니다.
+
+<ul>
+<li>히스토그램 평활화 기법은 이미지가 전체적으로 골고루 어둡거나 골고루 밝아서 특징을 분간하기 어려울 때 자주 쓰입니다.</li>
+</ul></li>
+<li>설명이 난해하니 코드를 통해 자세히 알아보겠습니다.</li>
+</ul>
+
+<pre><code class="language-python">def show_stacked_histogram(img):
+    stack_hist = np.zeros(255, dtype=np.float32)
+    eq_hist = np.zeros(255, dtype=np.float32)
+    w, h = img.shape
+    hist = cv2.calcHist([img], [0], None, [256], [0, 256])
+    for i in range(255):
+        stack_hist[i] = np.sum(hist[:i])
+        eq_hist[i] = round(stack_hist[i])
+    eq_hist /= (w * h)
+
+    plt.plot(eq_hist)
+    plt.title('Stacked Histogram', size=15)
+    plt.show()
+</code></pre>
+
+<pre><code class="language-python">show_stacked_histogram(img)
+</code></pre>
+
+
+
+
+  
+
+<figure>
+
+<img src="/img/Histogram_19_0.png" />
+
+
+</figure>
+
+<ul>
+<li>0부터 255까지의 Histogram의 누적치 입니다. 쉽게 말하면 Histogram을 적분한 것이라고 할 수 있습니다.
+
+<ul>
+<li>e.g) eq_hist[150] = 0.675 &rarr; 이미지 내에서 <strong>0부터 150까지의 pixel이 차지하는 비율 = 67.5%</strong></li>
+<li>당연히 항상 eq_hist[0] = 0이며, eq_hist[255] = 1.0 입니다.</li>
+</ul></li>
+<li>전체적으로 직선에 가까운 형태지만 x좌표기준 0 근처와 255 근처는 수평인 것을 알 수 있습니다.
+
+<ul>
+<li>이 말은 Lena image에서 pixel 값 기준 0 근처와 255 근처가 존재하지 않는다는 말 입니다.</li>
+<li>즉, 다시 말해 전체 pixel 값들에 대하여 분포가 균일하지 않다는 말 입니다.</li>
+</ul></li>
+<li><strong>히스토그램 평활화</strong>는 이와 같이 <strong>균일하지 않은 픽셀값의 분포를 고르게</strong> 만드는 작업입니다.
+&mdash;</li>
+<li>그럼 이제 히스토그램 평활화를 해보겠습니다.</li>
+</ul>
+
+<pre><code class="language-python">equ = cv2.equalizeHist(img)
+show_stacked_histogram(equ)
+</code></pre>
+
+
+
+
+  
+
+<figure>
+
+<img src="/img/Histogram_21_0.png" />
+
+
+</figure>
+
+<ul>
+<li>OpenCV에 구현되어있는 cv2.equalizeHist()함수를 통해 평활화한 Lena의 Histogram입니다.</li>
+<li>이제 Histogram 누적치가 직선 형태라는 말이 확실하게 이해 되실 것 같습니다.
+&mdash;</li>
+<li>마지막으로 이렇게 변화시킨 이미지가 원본 이미지와 어떻게 다른지 확인해 보겠습니다.</li>
+</ul>
+
+<pre><code class="language-python">plt.figure(figsize=(8,8))
+
+plt.subplot(121)
+plt.imshow(img, cmap='gray')
+plt.title('Original Lena')
+
+plt.subplot(122)
+plt.imshow(equ, cmap='gray')
+plt.title('Equalized Lena')
+
+plt.show()
+</code></pre>
+
+
+
+
+  
+
+<figure>
+
+<img src="/img/Histogram_23_0.png" />
+
+
+</figure>
+
+<ul>
+<li>전체적인 톤의 변화를 확인할 수 있는데, 밝은 부분은 더 밝아지고 어두운 부분은 더 어두워지는 모습을 볼 수 있습니다.
+
+<ul>
+<li>이는 원본 이미지가 중간 정도 밝기의 픽셀을 다수 포함하고 있었고, 상대적으로 아주 어둡거나 아주 밝은 부분은 적었기 때문입니다.</li>
+<li>히스토그램 평활화를 통해 모든 픽셀값이 동일한 비율로 등장하게끔 수정하여 이와 같은 변화가 일어났다고 볼 수 있습니다.</li>
+</ul></li>
+<li>히스토그램 평활화에 대한 자세한 내용은 마찬가지로 OpenCV 공식 tutorial page를 통해 확인할 수 있습니다. <a href="https://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_imgproc/py_histograms/py_histogram_equalization/py_histogram_equalization.html#histogram-equalization" target="_blank">[3]</a></li>
+</ul>
+
+<hr />
+
+<h2 id="conclusion">Conclusion</h2>
+
+<ul>
+<li>이미지 분석의 기초인 히스토그램에 대하여 알아보았습니다.</li>
+<li>또한 이미지 처리 기법중 하나인 히스토그램 평활화를 알아보았으며, 실질적으로 히스토그램에 어떤 변화를 주는지 확인할 수 있었습니다.</li>
+</ul>
+
+<hr />
+
+<h2 id="reference">Reference</h2>
+
+<ul>
+<li>[1] 오일석, 컴퓨터 비전, 2014, pp. 58-63</li>
+<li>[2] Alexander Mordvintsev &amp; Abid K., &lsquo;Histograms - 1 : Find, Plot, Analyze !!!&lsquo;,  OpenCV-python tutorials. 2013 [Online]. Available: <a href="https://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_imgproc/py_histograms/py_histogram_begins/py_histogram_begins.html#histogram-calculation-in-opencv" target="_blank">https://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_imgproc/py_histograms/py_histogram_begins/py_histogram_begins.html#histogram-calculation-in-opencv</a> [Accessed: 29- Mar- 2019]</li>
+<li>[3] Alexander Mordvintsev &amp; Abid K., &lsquo;Histograms - 2: Histogram Equalization&rsquo;,  OpenCV-python tutorials. 2013 [Online]. Available: <a href="https://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_imgproc/py_histograms/py_histogram_equalization/py_histogram_equalization.html#histogram-equalization" target="_blank">https://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_imgproc/py_histograms/py_histogram_equalization/py_histogram_equalization.html#histogram-equalization</a> [Accessed: 29- Mar- 2019]</li>
+</ul>
+
+    </div>
+
+    
+
+
+
+    
+      
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+  
+
+
+
+
+
+
+	
+	
+	
+	
+	
+	<div class="media author-card" itemscope itemtype="http://schema.org/Person">
+	  
+	  
+	  <img class="portrait mr-3" src="/author/young-kim/avatar_hu52a603635ecebd45650b162dadabb4e5_12861_250x250_fill_q90_lanczos_center.jpg" itemprop="image" alt="Avatar">
+	  
+	  <div class="media-body">
+	    <h5 class="card-title" itemprop="name"><a href="/authors/young-kim">YoungEon Kim</a></h5>
+	    <h6 class="card-subtitle">AI Scientist</h6>
+	    
+	    <ul class="network-icon" aria-hidden="true">
+	      
+	      
+	      
+	      
+		
+	      
+	      
+	      
+	      
+	      
+	      <li>
+		<a itemprop="sameAs" href="mailto:young.kim@medipixel.io" >
+		  <i class="fas fa-envelope"></i>
+		</a>
+	      </li>
+	      
+	      
+	      
+	      
+		
+	      
+	      
+	      
+	      
+	      
+		
+	      
+	      <li>
+		<a itemprop="sameAs" href="https://twitter.com/kye9216789" target="_blank" rel="noopener">
+		  <i class="fab fa-twitter"></i>
+		</a>
+	      </li>
+	      
+	      
+	      
+	      
+		
+	      
+	      
+	      
+	      
+	      
+		
+	      
+	      <li>
+		<a itemprop="sameAs" href="https://github.com/kye9216789" target="_blank" rel="noopener">
+		  <i class="fab fa-github"></i>
+		</a>
+	      </li>
+	      
+	    </ul>
+	  </div>
+	</div>
+	
+	
+
+
+
+	
+	
+	
+	
+	
+	<div class="media author-card" itemscope itemtype="http://schema.org/Person">
+	  
+	  
+	  <img class="portrait mr-3" src="/author/whi-kwon/avatar_hu9f99ec4f5e6ea5840aa975879b10ccd2_87452_250x250_fill_q90_lanczos_center.jpg" itemprop="image" alt="Avatar">
+	  
+	  <div class="media-body">
+	    <h5 class="card-title" itemprop="name"><a href="/authors/whi-kwon">Whi Kwon</a></h5>
+	    <h6 class="card-subtitle">AI Researcher</h6>
+	    
+	    <ul class="network-icon" aria-hidden="true">
+	      
+	      
+	      
+	      
+		
+	      
+	      
+	      
+	      
+	      
+	      <li>
+		<a itemprop="sameAs" href="mailto:whi.kwon@medipixel.io" >
+		  <i class="fas fa-envelope"></i>
+		</a>
+	      </li>
+	      
+	      
+	      
+	      
+		
+	      
+	      
+	      
+	      
+	      
+		
+	      
+	      <li>
+		<a itemprop="sameAs" href="https://github.com/whikwon" target="_blank" rel="noopener">
+		  <i class="fab fa-github"></i>
+		</a>
+	      </li>
+	      
+	    </ul>
+	  </div>
+	</div>
+	
+	
+
+
+      
+      
+    
+
+    
+
+    
+
+
+  </div>
+</article>
+
+<div class="container">
+  <footer class="site-footer">
+  
+
+  <p class="powered-by">
+    
+
+    Powered by the
+    <a href="https://sourcethemes.com/academic/" target="_blank" rel="noopener">Academic theme</a> for
+    <a href="https://gohugo.io" target="_blank" rel="noopener">Hugo</a>.
+
+    
+    <span class="float-right" aria-hidden="true">
+      <a href="#" id="back_to_top">
+        <span class="button_icon">
+          <i class="fas fa-chevron-up fa-2x"></i>
+        </span>
+      </a>
+    </span>
+    
+  </p>
+</footer>
+
+</div>
+
+
+<div id="modal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Cite</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <pre><code class="tex hljs"></code></pre>
+      </div>
+      <div class="modal-footer">
+        <a class="btn btn-outline-primary my-1 js-copy-cite" href="#" target="_blank">
+          <i class="fas fa-copy"></i> Copy
+        </a>
+        <a class="btn btn-outline-primary my-1 js-download-cite" href="#" target="_blank">
+          <i class="fas fa-download"></i> Download
+        </a>
+        <div id="modal-error"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+    
+    
+    <script src="/js/mathjax-config.js"></script>
+    
+
+    
+    
+    
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.imagesloaded/4.1.4/imagesloaded.pkgd.min.js" integrity="sha256-lqvxZrPLtfffUl2G/e7szqSvPBILGbwmsGE1MKlOi0Q=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.isotope/3.0.6/isotope.pkgd.min.js" integrity="sha256-CBrpuqrMhXwcLLUd5tvQ4euBHCdh7wGlDfNz8vbu/iI=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.js" integrity="sha256-X5PoE3KU5l+JcX+w09p/wHl9AzK333C4hJ2I9S5mD4M=" crossorigin="anonymous"></script>
+
+      
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/highlight.min.js" integrity="sha256-aYTdUrn6Ow1DDgh5JTc3aDGnnju48y/1c8s1dgkYPQ8=" crossorigin="anonymous"></script>
+        
+        <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/languages/python.min.js"></script>
+        
+      
+
+      
+      
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS_CHTML-full" integrity="sha256-GhM+5JHb6QUzOQPXSJLEWP7R73CbkisjzK5Eyij4U9w=" crossorigin="anonymous" async></script>
+      
+    
+
+    
+    
+
+    
+    
+    
+
+    
+    
+    <script>hljs.initHighlightingOnLoad();</script>
+    
+
+    
+    
+    <script>
+      const search_index_filename = "/index.json";
+      const i18n = {
+        'placeholder': "Search...",
+        'results': "results found",
+        'no_results': "No results found"
+      };
+      const content_type = {
+        'post': "Posts",
+        'project': "Projects",
+        'publication' : "Publications",
+        'talk' : "Talks"
+        };
+    </script>
+    
+
+    
+    
+
+    
+    
+    <script id="search-hit-fuse-template" type="text/x-template">
+      <div class="search-hit" id="summary-{{key}}">
+      <div class="search-hit-content">
+        <div class="search-hit-name">
+          <a href="{{relpermalink}}">{{title}}</a>
+          <div class="article-metadata search-hit-type">{{type}}</div>
+          <p class="search-hit-description">{{snippet}}</p>
+        </div>
+      </div>
+      </div>
+    </script>
+    
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.1/fuse.min.js" integrity="sha256-VzgmKYmhsGNNN4Ph1kMW+BjoYJM2jV5i4IlFoeZA9XI=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js" integrity="sha256-4HLtjeVgH0eIB3aZ9mLYF6E8oU5chNdjU6p6rrXpl9U=" crossorigin="anonymous"></script>
+    
+
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+      
+    
+    
+    
+    
+    <script src="/js/academic.min.3258b3a711acd6208568ec000de4beec.js"></script>
+
+  </body>
+</html>
+
