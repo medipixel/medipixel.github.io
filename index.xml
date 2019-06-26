@@ -19,7 +19,7 @@
       <guid>/post/2019-06-26-policy-invariance-under-reward-transformation_theory-and-application-to-reward-shaping/</guid>
       <description>
 
-&lt;p&gt;이번 포스트에서는 강화학습에서 reward shaping의 기반이 되는 논문인 &lt;strong&gt;&amp;ldquo;Policy invariance under reward transformation: Theory and application to reward shaping&amp;rdquo;&lt;/strong&gt;(A. Y. Ng et al., 1999) &lt;a href=&#34;#ref_1&#34;&gt;[1]&lt;/a&gt;을 읽고 정리한 내용을 공유합니다.&lt;/p&gt;
+&lt;p&gt;이번 포스트에서는 강화학습에서 reward shaping의 기반이 되는 논문인 &lt;strong&gt;&amp;ldquo;Policy invariance under reward transformation: Theory and application to reward shaping&amp;rdquo;&lt;/strong&gt; (A. Y. Ng et al., 1999) &lt;a href=&#34;#ref_1&#34;&gt;[1]&lt;/a&gt;을 읽고 정리한 내용을 공유합니다.&lt;/p&gt;
 
 &lt;blockquote&gt;
 &lt;p&gt;글쓴이의 의견이나 부연 설명은 이 문장과 같이 블록으로 표시합니다.&lt;/p&gt;
