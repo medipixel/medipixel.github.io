@@ -3,24 +3,41 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
-    <loc>/post/anchor-target/</loc>
-    <lastmod>2019-06-14T13:15:00+09:00</lastmod>
-  </url>
-  
-  <url>
     <loc>/authors/</loc>
-    <lastmod>2019-06-14T13:15:00+09:00</lastmod>
+    <lastmod>2019-06-26T13:15:00+09:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>/</loc>
-    <lastmod>2019-06-14T13:15:00+09:00</lastmod>
+    <lastmod>2019-06-26T13:15:00+09:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>/post/</loc>
+    <lastmod>2019-06-26T13:15:00+09:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/post/2019-06-26-policy-invariance-under-reward-transformation_theory-and-application-to-reward-shaping/</loc>
+    <lastmod>2019-06-26T13:15:00+09:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/authors/curt-park/</loc>
+    <lastmod>2019-06-26T13:15:00+09:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/authors/kyunghwan-kim/</loc>
+    <lastmod>2019-06-26T13:15:00+09:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/post/2019-06-14-anchor-target/</loc>
     <lastmod>2019-06-14T13:15:00+09:00</lastmod>
   </url>
   
@@ -37,12 +54,12 @@
   </url>
   
   <url>
-    <loc>/post/image-thresholding/</loc>
+    <loc>/post/2019-06-07-image-thresholding/</loc>
     <lastmod>2019-06-07T12:00:00+09:00</lastmod>
   </url>
   
   <url>
-    <loc>/post/histogram/</loc>
+    <loc>/post/2019-05-31-histogram/</loc>
     <lastmod>2019-05-31T12:00:00+09:00</lastmod>
   </url>
   
@@ -63,12 +80,20 @@
   </url>
   
   <url>
-    <loc>/post/2018-12-08-nips2018/</loc>
+    <loc>/post/2018-12-08-nips2018-intro/</loc>
     <lastmod>2018-12-08T22:22:17+09:00</lastmod>
   </url>
   
   <url>
+    <loc>/author/curt-park/</loc>
+  </url>
+  
+  <url>
     <loc>/author/hyungkyu-kim/</loc>
+  </url>
+  
+  <url>
+    <loc>/author/kyunghwan-kim/</loc>
   </url>
   
   <url>

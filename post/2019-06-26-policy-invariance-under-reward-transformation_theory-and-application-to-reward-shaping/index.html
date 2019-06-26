@@ -1,0 +1,1087 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="generator" content="Source Themes Academic 4.3.0">
+
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+  
+  
+    
+  
+  <meta name="description" content="Reward shaping method to assure policy invaraiance in RL">
+
+  
+  <link rel="alternate" hreflang="en-us" href="/post/2019-06-26-policy-invariance-under-reward-transformation_theory-and-application-to-reward-shaping/">
+
+  
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+  
+  <meta name="theme-color" content="#3f51b5">
+  
+
+  
+  
+  
+  
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/academicons/1.8.6/css/academicons.min.css" integrity="sha256-uFVgMKfistnJAfoCUQigIl+JfUaP47GrRKjf6CTPVmw=" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.0/css/all.css" integrity="sha384-aOkxzJ5uQz7WBObEZcHvV5JvRW3TUc2rNPA7pe3AwnsUohiw1Vj2Rgx2KSOkF5+h" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.css" integrity="sha256-ygkqlh3CYSUri3LhQxzdcm0n1EQvH2Y+U5S2idbLtxs=" crossorigin="anonymous">
+
+    
+    
+    
+      
+    
+    
+      
+      
+        
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/github.min.css" crossorigin="anonymous" title="hl-light">
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/dracula.min.css" crossorigin="anonymous" title="hl-dark" disabled>
+        
+      
+    
+
+    
+
+    
+
+  
+
+  
+  
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Montserrat:400,700|Roboto:400,400italic,700|Roboto+Mono">
+  
+
+  
+  
+  
+  <link rel="stylesheet" href="/css/academic.min.4fc3a454da211fdddd30085a99421de1.css">
+
+  
+
+  
+  
+  
+
+  
+
+  <link rel="manifest" href="/site.webmanifest">
+  <link rel="icon" type="image/png" href="/img/icon.png">
+  <link rel="apple-touch-icon" type="image/png" href="/img/icon-192.png">
+
+  <link rel="canonical" href="/post/2019-06-26-policy-invariance-under-reward-transformation_theory-and-application-to-reward-shaping/">
+
+  
+  
+  
+  
+    
+    
+  
+  <meta property="twitter:card" content="summary">
+  
+  <meta property="og:site_name" content="Medipixel">
+  <meta property="og:url" content="/post/2019-06-26-policy-invariance-under-reward-transformation_theory-and-application-to-reward-shaping/">
+  <meta property="og:title" content="[Paper Study] Policy invariance under reward transformation | Medipixel">
+  <meta property="og:description" content="Reward shaping method to assure policy invaraiance in RL"><meta property="og:image" content="/img/icon-192.png">
+  <meta property="og:locale" content="en-us">
+  
+  <meta property="article:published_time" content="2019-06-26T13:15:00&#43;09:00">
+  
+  <meta property="article:modified_time" content="2019-06-26T13:15:00&#43;09:00">
+  
+
+  
+
+  
+
+  <title>[Paper Study] Policy invariance under reward transformation | Medipixel</title>
+
+</head>
+<body id="top" data-spy="scroll" data-target="#TableOfContents" data-offset="71" >
+  <aside class="search-results" id="search">
+  <div class="container">
+    <section class="search-header">
+
+      <div class="row no-gutters justify-content-between mb-3">
+        <div class="col-6">
+          <h1>Search</h1>
+        </div>
+        <div class="col-6 col-search-close">
+          <a class="js-search" href="#"><i class="fas fa-times-circle text-muted" aria-hidden="true"></i></a>
+        </div>
+      </div>
+
+      <div id="search-box">
+        
+        <input name="q" id="search-query" placeholder="Search..." autocapitalize="off"
+        autocomplete="off" autocorrect="off" role="textbox" spellcheck="false" type="search">
+        
+      </div>
+
+    </section>
+    <section class="section-search-results">
+
+      <div id="search-hits">
+        
+      </div>
+
+    </section>
+  </div>
+</aside>
+
+
+
+<nav class="navbar navbar-light fixed-top navbar-expand-lg py-0" id="navbar-main">
+  <div class="container">
+
+    
+      <a class="navbar-brand" href="/">Medipixel</a>
+      
+      <button type="button" class="navbar-toggler" data-toggle="collapse"
+              data-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+        <span><i class="fas fa-bars"></i></span>
+      </button>
+      
+
+    
+    <div class="collapse navbar-collapse" id="navbar">
+
+      
+      
+      <ul class="navbar-nav mr-auto">
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+        
+        
+        
+        
+        
+          
+          
+          
+            
+          
+          
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/#posts">
+            
+            <span>Posts</span>
+            
+          </a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+        
+        
+        
+        
+        
+          
+          
+          
+            
+          
+          
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/#contact">
+            
+            <span>Contact</span>
+            
+          </a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+
+        
+        
+        
+        
+        
+        
+
+        <li class="nav-item">
+          <a class="nav-link  active" href="/">
+            
+            <span></span>
+            
+          </a>
+        </li>
+
+        
+        
+
+      
+      </ul>
+      <ul class="navbar-nav ml-auto">
+      
+
+        
+
+        
+        <li class="nav-item">
+          <a class="nav-link js-search" href="#"><i class="fas fa-search" aria-hidden="true"></i></a>
+        </li>
+        
+
+        
+
+        
+        <li class="nav-item">
+          <a class="nav-link js-dark-toggle" href="#"><i class="fas fa-moon" aria-hidden="true"></i></a>
+        </li>
+        
+
+      </ul>
+
+    </div>
+  </div>
+</nav>
+
+
+<article class="article" itemscope itemtype="http://schema.org/Article">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+  
+  
+<div class="article-container pt-3">
+  <h1 itemprop="name">[Paper Study] Policy invariance under reward transformation</h1>
+
+  
+
+  
+    
+
+
+
+<meta content="2019-06-26 13:15:00 &#43;0900 KST" itemprop="datePublished">
+<meta content="2019-06-26 13:15:00 &#43;0900 KST" itemprop="dateModified">
+
+<div class="article-metadata">
+
+  
+  
+  
+  
+  <div>
+    
+
+
+
+  <span itemprop="author name" itemtype="http://schema.org/Person"><a href="/authors/kyunghwan-kim/">kyunghwan-kim</a></span>, <span itemprop="author name" itemtype="http://schema.org/Person"><a href="/authors/curt-park/">curt-park</a></span>
+
+  </div>
+  
+  
+
+  
+  <span class="article-date">
+    
+    
+      
+    
+    <time>Jun 26, 2019</time>
+  </span>
+  
+
+  
+
+  
+  <span class="middot-divider"></span>
+  <span class="article-reading-time">
+    10 min read
+  </span>
+  
+
+  
+  
+
+  
+  
+
+  
+    
+<div class="share-box" aria-hidden="true">
+  <ul class="share">
+    <li>
+      <a class="twitter"
+         href="https://twitter.com/intent/tweet?text=&amp;url="
+         target="_blank" rel="noopener">
+        <i class="fab fa-twitter"></i>
+      </a>
+    </li>
+    <li>
+      <a class="facebook"
+         href="https://www.facebook.com/sharer.php?u="
+         target="_blank" rel="noopener">
+        <i class="fab fa-facebook-f"></i>
+      </a>
+    </li>
+    <li>
+      <a class="linkedin"
+         href="https://www.linkedin.com/shareArticle?mini=true&amp;url=&amp;title="
+         target="_blank" rel="noopener">
+        <i class="fab fa-linkedin-in"></i>
+      </a>
+    </li>
+    <li>
+      <a class="weibo"
+         href="http://service.weibo.com/share/share.php?url=&amp;title="
+         target="_blank" rel="noopener">
+        <i class="fab fa-weibo"></i>
+      </a>
+    </li>
+    <li>
+      <a class="email"
+         href="mailto:?subject=&amp;body=">
+        <i class="fas fa-envelope"></i>
+      </a>
+    </li>
+  </ul>
+</div>
+
+
+  
+
+</div>
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+</div>
+
+
+
+  <div class="article-container">
+
+    <div class="article-style" itemprop="articleBody">
+      
+
+<p>이번 포스트에서는 강화학습에서 reward shaping의 기반이 되는 논문인 <strong>&ldquo;Policy invariance under reward transformation: Theory and application to reward shaping&rdquo;</strong>(A. Y. Ng et al., 1999) <a href="#ref_1">[1]</a>을 읽고 정리한 내용을 공유합니다.</p>
+
+<blockquote>
+<p>글쓴이의 의견이나 부연 설명은 이 문장과 같이 블록으로 표시합니다.</p>
+</blockquote>
+
+<h2 id="introduction">Introduction</h2>
+
+<hr />
+
+<p>강화학습에서 task는 <strong>Reward function</strong>을 통해 표현됩니다. 이 reward function에 변화를 주는 것으로 학습의 성능을 향상시킬 수 있습니다. 이를 <strong>Reward shaping</strong> 이라고 합니다. 하지만 reward function은 굉장히 민감하기 때문에 reward shaping의 방법에 따라 agent는 의도와 다른 행동을 하기도 합니다. 본 논문에서는 이런 의도하지 않은 학습 결과를 <strong>bug</strong>라고 표현하며 그 예시로 두 가지 경우를 설명합니다.</p>
+
+<ol>
+<li>자전거 주행 agent를 빨리 학습시키기 위해 goal 방향으로 갈때 positive reward를 주었더니 시작 지점을 중심으로 원을 그리며 도는 agent가 되었다. 이유는 goal에서 멀어질때 penalty를 안주었기 때문에 계속 돌기만 해도 goal에 가까워질때 받은 positive reward가 무한히 쌓이기 때문이다.</li>
+<li>축구 로봇을 학습할 때 공을 계속 점유하고 있는 것이 중요하다. 그래서 공을 건드릴 때 reward를 주었더니 공 바로 옆에서 진동하는 agent가 되었다. 공을 계속 건드려서 reward를 반복적으로 받을 수 있기 때문이다.</li>
+</ol>
+
+<p>위의 예시에서 우리가 바라는 것은 자전거 주행 agent는 goal에 도착하는 것이고  축구 로봇은 공을 상대 골대에 넣는 것입니다. 하지만 잘못된 reward shaping으로 전혀 다른 목표를 달성하는 agent를 학습시키게 되었습니다. 이처럼 reward shaping은 강화학습의 성능 향상을 위해 효과적인 방법이지만 의도한 방향으로 shaping 하는 것은 어렵습니다.  특히 위와 같이 positive reward가 계속해서 쌓이는 것을 <strong>positive reward cycle</strong> 이라고 논문에서 표현합니다.</p>
+
+<p>이런 현상이 발생하는 이유는 reward function에 따라 agent가 학습하고자 하는 <strong>optimal policy</strong>가 아닌 <strong>suboptimal</strong>로 잘못 학습했기 때문입니다. 본 논문에서 optimal policy는 우리가 해당 문제에 대해 agent에게 학습시키고자 하는 정책이고 suboptimal은 우리가 원하는 policy는 아니지만 높은 reward를 받을 수 있는 정책을 말합니다. reward function의 변화가 학습하고자 하는 policy에도 영향을 주어 reward를 최대로 받는 방향으로 학습하여도 우리가 원하지 않는 방향으로 행동하는 agent로 학습되는 것입니다. 그렇기 때문에 우리는 reward function에 변화를 주어도 optimal policy가 변하지 않는 reward function의 형태가 필요합니다. 이런 성질을 본 논문에서 <strong>Policy invariance</strong>이라고 표현합니다.</p>
+
+<p>본 논문에서는 reward function이 변화에 대해 policy invariance를 보장하는, 특히 positive reward cycle을 방지하는 reward function의 형태를 제안합니다.</p>
+
+<h2 id="preliminaries">Preliminaries</h2>
+
+<hr />
+
+<h3 id="definitions">Definitions</h3>
+
+<ul>
+<li><p>(finite-state) <strong>Markov decision process (MDP)</strong> $M$ : $(S, A, T, \gamma, R) $</p>
+
+<ul>
+<li>$S$ : a finite set of <strong>states</strong></li>
+<li>$A$ : a set of <strong>actions</strong></li>
+<li>$T$ : the next state <strong>transition probabilities</strong></li>
+<li>$\gamma$ : <strong>discount factor</strong></li>
+<li>$R$ : <strong>reward function,</strong> $R: S \times A \times S \mapsto \mathbb{R}$ with $R(s, a, s&rsquo;)$<br /></li>
+</ul></li>
+
+<li><p>$\pi$ : <strong>policy</strong> over set of states $S$ is any function $\pi : S \mapsto A$</p></li>
+
+<li><p><strong>Value function</strong> : $ V^{\pi}_{M}(s) = E[r_1 + \gamma r_2 + &hellip;; \pi, s만] $</p></li>
+
+<li><p><strong>Q-function</strong> : $ Q^{\pi}_{M}(s, a) = E_{s&rsquo; \sim P_{sa}(\cdot)}[R(s, a, s&rsquo;) + \gamma V^{\pi}_{M}(s&rsquo;) ] $</p></li>
+
+<li><p>$\textbf s_0​$: 본 논문에서는 $s_0$를 <strong>absorbing state</strong>라 하며, undiscounted MDP($\gamma​$ = 1) 일 때 더이상 reward를 주지 않는 state를 표현합니다. 이는 episodic task를 continuing task로 일반화할 때 terminal state와 같은 역할을 합니다. $s_0​$에서는 모든 action이 $s_0​$로의 state transition (상태 전이) 만을 발생시킵니다. 아래 그림이 하나의 예시입니다. (본 논문의 figure 3)<a href="#ref_2">[2]</a>
+<center><img src="https://user-images.githubusercontent.com/17582508/60148246-461eda00-980b-11e9-99e3-e3f836d72c2e.png" width="70%"></center></p></li>
+</ul>
+
+<blockquote>
+<p>일반적으로 $s_0$는 episode의 가장 첫번째 state를 표현하지만 본 논문에서는 absorbing state를 뜻합니다.</p>
+</blockquote>
+
+<h3 id="shaping-rewards">Shaping Rewards</h3>
+
+<p>본 논문에서는 reward shaping function을 추가한 새로운 reward function 형태를 제안합니다.</p>
+
+<p>$$ R&rsquo; = R + F $$</p>
+
+<p>$$ F : S \times A \times S \mapsto \mathbb{R} $$</p>
+
+<p>그리고 $R&rsquo;$ 을 이용해 MDP를 새롭게 정의합니다.</p>
+
+<p>$$ M&rsquo; = (S, A, T, \gamma, R&rsquo;) $$</p>
+
+<p>$F$ 는 <strong>shaping reward function</strong> 라고 합니다. $F$를 이용해 원하는 shaping term을 추가할 수 있습니다. 예를들어 agent가 goal에 가까워지도록 reward shaping을 하고 싶다면 다음과 같이 $F$를 정의할 수 있습니다.</p>
+
+<p>$$ F(s, a , s&rsquo;) =
+\begin{cases}
+r, &amp; \mbox{if } s&rsquo; \ closer \ to \ the \  goal \ than \ s.  \\\ 0, &amp; \mbox{otherwise}
+\end{cases} \text{, where } r \text{ is some positive reward.}$$</p>
+
+<p>$M&rsquo;$은 $M$과 같은 state, action, transition probablities, discount factor를 사용하기 때문에 강화학습 알고리즘을 동일하게 적용할 수 있습니다.</p>
+
+<p>우리의 목표는 정의한 MDP 모델과 강화학습 알고리즘을 이용해 최적의 policy를 찾아내는 것입니다. 그러기 위해서는 다음의 질문들에 대답할 필요가 있습니다.</p>
+
+<ul>
+<li>어떤 형태의 $F$ 를 사용해야 $M&rsquo;$ 에서의 optimal policy가 $M$에서도 동일하게 optimal policy라는 것을 보장할 수 있을지?</li>
+<li>이 때의 $M&rsquo;$는 positive reward cycle을 방지할 수 있는지?</li>
+</ul>
+
+<h2 id="main-results">Main results</h2>
+
+<hr />
+
+<p>이번 절에서는 어떤 형태의 $F$가 policy invariance를 보장하는지 알아봅시다.</p>
+
+<p>앞서 Introduction에서 자전거 문제를 예시로 들었습니다. 이 문제에서 단순히 goal로 가까워질때 추가적인 reward를 발생시켰고, 이로 인해 시작지점을 기준으로 원을 그리며 계속해서 회전하는 policy가 학습되었습니다. 이런 현상이 발생하는 이유는 agent가 특정 state를 순환($ s_1 \rightarrow s_2 \rightarrow &hellip; \rightarrow s_n \rightarrow s_1 \rightarrow &hellip; $)하는 경우에 $F$의 총합이 0보다 큰 값을 갖게 되기 때문입니다.</p>
+
+<p>$$F(s_1,  a_1, s_2) + F(s_2,  a_2, s_3) + &hellip; + F(s_n,  a_n, s_1) &gt; 0$$</p>
+
+<p>Goal에 도달하는 agent를 학습시키기 위해서는 목적을 성취(goal에 도달)하는 경우에 대해서만 positive reward를 발생시켜야 합니다. 허나, 위의 경우 $F$에 의해 특정 state들을 순환하는 것으로도 reward가 증가하게 되고, 그로 인해 agent는 특정 구간을 순환하는 suboptimal policy를 학습하게 됩니다. 이러한 positive reward cycle 문제를 해결하기 위해 본 논문에서는 다음과 같은 형태의 $F$를 제안합니다.</p>
+
+<p>$$ F(s,a,s&rsquo;) = \Phi (s&rsquo;) - \Phi (s) $$</p>
+
+<p>여기서 $\Phi$ 를 <strong>potential function</strong> 이라 하며 $F$ 를 <strong>potential-based shaping function</strong> 이라고 합니다. $F$ 가 다음 state와 현재 state에 대한 함수의 차이로 정의되었기 때문에 위의 예시처럼 cycle이 발생하더라도 reward가 계속해서 증가하지 않습니다.</p>
+
+<p>$$F(s_1,  a_1, s_2) + F(s_2,  a_2, s_3) + &hellip; + F(s_n,  a_n, s_1) = 0 $$</p>
+
+<p>더 나아가 본 논문에서는 transition probablity와 reward function이 prior knowledge로 주어지지 않았을 때, potential-based shaping function $F$가 policy invariance를 보장하는 유일한 $F$임을 증명합니다.</p>
+
+<h3 id="theorem-1">Theorem 1</h3>
+
+<p><img src="https://user-images.githubusercontent.com/17582508/59330543-b8cc8780-8d2c-11e9-8724-b05629c70ba3.png" width="65%"></p>
+
+<p>임의의 $S​$, $A​$, $\gamma​$에 대해 임의의 shaping reward function는 다음과 같습니다.</p>
+
+<p>$$F:S\times A \times S \mapsto \mathbb{R} $$</p>
+
+<p>이때, 모든 $s \in S - {s_0}, a \in A, s&rsquo; \in S​$에 대해 아래 식을 만족하는 real-valued function $\Phi: S \mapsto \mathbb{R}​$ 가 존재하면 $F​$를 <strong>potential-based shaping function</strong> 이라고 합니다.</p>
+
+<p>$$ F(s,a,s&rsquo;) = \gamma\Phi(s&rsquo;) - \Phi(s), \text{where} \ S - {s_0} = S \ \text{if} \ \gamma &lt; 1. $$</p>
+
+<p>그리고 potential-based shaping function $ F $ 는 <strong>optimal policy consistency</strong>를 보장하기 위한 필요충분 조건입니다.</p>
+
+<ul>
+<li>(충분조건) $F$ 가 potential-based shaping function 이면 $M&rsquo;$에서의 모든 optimal policy는 $M$에서도 optimal이다.</li>
+<li>(필요조건) $F$ 가 potential-based shaping function이 아니라면 $M&rsquo;$에서의 optimal policy가 $M$에서도 optimal임을 만족하는 transition과 reward function이 존재하지 않는다.</li>
+</ul>
+
+<p>Theorem 1에 따르면 위에서 언급한 optimal policy consistency를 만족하는 shaping function $F$가 식 (2)의 형태이고, 이 형태가 optimal policy consistency를 만족하는 유일한 $F$입니다.</p>
+
+<h4 id="proof-충분조건">Proof: 충분조건</h4>
+
+<p>MDP $M​$에 대한 optimal Q-function $Q^{*}_{M}(s,a)​$는 다음과 같습니다.</p>
+
+<p>$$ Q^{*}_{M}(s,a) = E_{s&rsquo; \sim P_{sa}(\cdot)} \bigg[R(s,a,s&rsquo;) + \gamma \underset{a&rsquo; \in A}{\max} Q^{*}_{M} (s&rsquo;, a&rsquo;)\bigg]​ $$</p>
+
+<p>이 식에 $\Phi$을 추가해서 전개합니다.</p>
+
+<p>$$ \begin{align}
+Q^{*}_{M}(s,a) - \Phi(s) &amp;= E_{s&rsquo; \sim P_{sa}(\cdot)} \bigg[R(s,a,s&rsquo;) + \gamma \big(\underset{a&rsquo; \in A}{\max} Q^{*}_{M} (s&rsquo;, a&rsquo;) + \Phi(s&rsquo;) - \Phi(s&rsquo;)\big)\bigg] - \Phi(s)​ \\<br />
+&amp;= E_{s&rsquo; \sim P_{sa}(\cdot)} \bigg[R(s,a,s&rsquo;) + \gamma \Phi(s&rsquo;) - \Phi(s) + \gamma \big(\underset{a&rsquo; \in A}{\max} Q^{*}_{M} (s&rsquo;, a&rsquo;) - \Phi(s&rsquo;)\big)\bigg] \\<br />
+\end{align} $$</p>
+
+<p>여기서 $ \hat Q_{M&rsquo;} (s,a) \triangleq Q^{*}_{M}(s,a)  - \Phi(s)​ $ 라 정의하고 $F(s,a,s&rsquo;) = \gamma \Phi(s&rsquo;) - \Phi(s)​$ 로 치환합니다.</p>
+
+<p>$$ \begin{align}
+ \hat Q_{M&rsquo;} &amp;= E_{s&rsquo; \sim P_{sa}(\cdot)} \bigg[R(s,a,s&rsquo;) + F(s,a,s&rsquo;) + \gamma \underset{a&rsquo; \in A}{\max} \hat Q_{M&rsquo;} (s&rsquo;, a&rsquo;)\bigg] \\<br />
+&amp;= E_{s&rsquo; \sim P_{sa}(\cdot)} \bigg[R&rsquo;(s,a,s&rsquo;) + \gamma \underset{a&rsquo; \in A}{\max} \hat Q_{M&rsquo;} (s&rsquo;, a&rsquo;)\bigg] \\<br />
+\end{align} $$</p>
+
+<p>위 식에 따르면 $ \hat Q_{M&rsquo;} (s,a) $는 결국 MDP $ M&rsquo;(S, A, T, R&rsquo;, \gamma) $ 에서의 Q function $ Q_{M&rsquo;} (s,a)$ 와 같은 형태가 됩니다. 그리고 $M&rsquo;$이 undiscounted case ($ \gamma = 1 $)이고 $\Phi(s_0) = 0 $이라 가정했을 때
+$$ \hat Q_{M&rsquo;}(s_0, a) = Q^{*}_{M}(s_0,a)  - \Phi(s_0) = 0 - 0 = 0 $$
+ 을 만족하게 됩니다. 따라서 $\hat{Q}_{M&rsquo;} (s,a)​$는 Bellman equation을 만족하며 unique optimal Q-function을 반드시 갖게 됩니다.</p>
+
+<p>그러므로 $M&rsquo;​$에서의 optimal policy $\pi^*_{M&rsquo;}(s)​$는 다음 식을 만족합니다.</p>
+
+<p>$$ \begin{align}
+ \pi^*_{M&rsquo;}(s) &amp;\in \underset{a\in A}{\arg\max} Q^*_{M&rsquo;}(s,a) \\<br />
+&amp;= \underset{a\in A}{\arg\max} Q^*_{M}(s,a) - \Phi(s) \\<br />
+&amp;= \underset{a\in A}{\arg\max} Q^*_{M}(s,a)
+\end{align} $$</p>
+
+<p>즉, $M&rsquo;$에서의 optimal policy $\pi^*_{M&rsquo;}(s)$는 $M$에서 또한 optimal policy임을 알 수 있습니다.</p>
+
+<blockquote>
+<p>필요조건의 증명은 논문의 <strong>Appendix A</strong>를 참고하시기 바랍니다.</p>
+</blockquote>
+
+<p>위의 <strong>Theorem 1</strong>의 필요충분 조건에 대한 증명을 통해 potential-based shaping function이 policy invariance를 보장하는 유일한 $F$임을 증명하였습니다. 그렇다면 potential-based shaping function의 $\Phi$는 어떤 식으로 정의해야할까요? 논문에서는 <strong>Corollary 2</strong>를 통해 $\Phi​$를 구하는 한가지 방법을 서술합니다.</p>
+
+<blockquote>
+<p><strong>Corollary(따름 정리)</strong>는 Theorem으로부터 바로 증명할 수 있는 참인 명제를 말합니다.</p>
+</blockquote>
+
+<h3 id="corollary-2">Corollary 2</h3>
+
+<p><img src="https://user-images.githubusercontent.com/17582508/59690731-d6ae5680-921c-11e9-9138-951d62d3ba57.png" width="70%"></p>
+
+<p>$ F(s,a,s&rsquo;) = \gamma \Phi(s&rsquo;) - \Phi(s) $ 이고 $ \gamma = 1 $ 일 때 $ \Phi(s_0) = 0 $를 가정하면, 모든 $ s \in S, a \in A $ 대해 다음 식을 만족합니다.</p>
+
+<p>$$ Q^*_{M&rsquo;}(s,a) = Q^*_{M}(s,a) - \Phi(s), \\<br />
+V^*_{M&rsquo;}(s) = V^*_{M}(s) - \Phi(s). $$</p>
+
+<h4 id="proof-corollary-2">Proof: Corollary 2</h4>
+
+<p>식 (3)은 Theorem 1의 충분조건의 증명과정을 통해 증명되었습니다. $ V^*(s) = \underset{a \in A}{\max}Q^*(s,a) $ 이기 때문에 식 (3)을 만족하면 식 (4)도 만족합니다.</p>
+
+<p><strong>Corollary 2</strong>를 통해 $ V^*_{M&rsquo;}(s) = V^*_{M}(s) - \Phi(s) $이 참임을 알게 되었습니다. 논문에서는 (4)를 통해 $ \Phi ​$의 가장 쉬운 형태를 제안합니다.</p>
+
+<h3 id="potential-based-function">potential-based function</h3>
+
+<p>실제 환경에서 $ \Phi $를 정의하기 위해서는 domain에 대한 expert knowledge가 필요합니다. 만약 domain knowledge (MDP $M$)를 충분히 알고 있다면 $\Phi$를 다음과 같이 가정할 수 있습니다.</p>
+
+<p>$$ \Phi(s) = V^*_{M}(s) $$</p>
+
+<p>$\Phi$를 위와 같이 가정하면 <strong>Corollary 2</strong>의 (4)에 따라 $M&rsquo;$에 대한 value function은 $V^*_{M&rsquo;}(s) \equiv 0$입니다. 논문에서는 이런 형태의 value function이 학습에 용이하다고 합니다. 또한 위와 다른 형태의 $\Phi$를 이용해도 충분히 policy invariance를 보장한다고 주장합니다.</p>
+
+<blockquote>
+<p>$M&rsquo;$에서의 (near-) optimal policy가 $M$에서도 (near-) optimal policy임을 보장한다 라고 서술하며 <strong>Remark 1</strong> 을 통해 optimal이 아닌 near optimal 에서도 <strong>Theorem 1</strong>이 성립함을 언급합니다.
+<img src="https://user-images.githubusercontent.com/17582508/60153261-b551f980-981e-11e9-9834-1477ee0eed70.png" width="70%"></p>
+</blockquote>
+
+<h2 id="experiments">Experiments</h2>
+
+<hr />
+
+<p>Experiments 절에서는 두 가지 grid world 환경에서 potential-based shaping function에 변화를 주며 비교 실험한 결과를 보여줍니다. 본 논문에서는 이 실험을 통해 학습 속도 향상을 위한 합리적인 $\Phi$를 정하는 방향을 설명하는 것이 목적이라고 말합니다.</p>
+
+<h3 id="10-x-10-grid-world">10 x 10 grid world</h3>
+
+<p>10 x 10 grid world 환경은 no discount setting ($ \gamma = 1 $)이며 매 step 당 -1의 reward(penalty)를 받습니다. 1 step action을 할 때 80% 확률로 exploitation 하고 20% 확률로 exploration (random action) 합니다. 저자들은 이전 절에서 좋은 shaping potential $ \Phi(s) = V^*_{M}(s) $ 를 제안했습니다. 이 실험환경에서의 $ V^*_{M} $ 은 현재 state에서 Goal 까지의 Manhattan distance로 볼 수 있습니다. 여기에 80%의 확률로 exploitation하는 것을 감안하여 $V^*_{M}$에 가까운 $\Phi​$ 를 다음과 같이 정의합니다.</p>
+
+<p>$$
+\Phi_0(s) = \hat{V}_M(s) = - {MANHATTAN}(s, GOAL) / 0.8
+$$</p>
+
+<blockquote>
+<p>참고: <a href="https://en.wikipedia.org/wiki/Taxicab_geometry" target="_blank">Manhattan distance wiki</a></p>
+</blockquote>
+
+<p>그리고 $V^*_{M}$와 좀 더 먼 $\Phi​$ 에 대해서도 shaping potential이 잘 동작하는 것을 보이기 위해 $ \Phi(s) = 0.5 \Phi_0(s) = 0.5 \hat{V}_M(s) ​$ 에 대해서도 실험합니다. 실험 결과는 아래와 같습니다.</p>
+
+<p><img src="https://user-images.githubusercontent.com/17582508/59761653-5812f100-92d0-11e9-8934-9fbca9d5aa9d.png" width="90%"></p>
+
+<p>위 그래프를 통해 $0.5 \Phi_0(s)$와 $\Phi_0(s)$를 shaping potential로 사용했을때, shaping을 사용하지 않은 경우에 비해 학습이 빠른 속도로 수렴함을 확인 할 수 있습니다. 또한 $0.5\Phi_0(s)$를 사용하더라도 $\Phi_0(s)$를 사용했을 때와 거의 유사하게 학습 속도가 향상됨을 보여줍니다. 나아가 조금 더 큰 환경인 50 x 50 grid world 환경에서도 potential-based shaping reward를 사용한 경우에 성능이 더 빠르게 향상됨을 확인 할 수 있습니다.</p>
+
+<h3 id="5-x-5-grid-world-with-subgoals">5 x 5 grid world with subgoals</h3>
+
+<p>이번 실험에서는 subgoal이 있는 환경에서도 potential-based shaping reward이 잘 작동하는지 확인합니다.</p>
+
+<p><img src="https://user-images.githubusercontent.com/17582508/59762873-3404df00-92d3-11e9-9a89-8bda6b1f568e.png" width="50%"></p>
+
+<p>Action과 reward function의 설정은 이전 10 x 10 grid world 환경과 동일합니다. 위 그림의 grid 내부에 표시된 숫자는 각각 flag를 의미하고, agent는 모든 flag를 순서대로 (오름차순) 획득한 뒤 goal에 도착해야합니다. 이 환경에 대한 potential-function을 정의해봅시다. 만약 subgoal의 위치를 모두 알고 있고 이전 환경과 동일하게 80%의 exploitation을 한다면 우리는 goal에 도착하기까지의 timestep t를 예측할 수 있습니다. 이 환경에서는 이전 subgoal에서 다음 subgoal로 가기까지 필요한 step의 갯수가 모두 유사하기 때문에 n번째 subgoal에 도달하기 위한 step은 $((5-n_s)/5)t$ step이라고 할 수 있습니다. 이때 $n_s$는 $s$ 일때 통과한 subgoal의 수가 됩니다.</p>
+
+<p>위에서 도출한 식을 이용하여 potential-function을 다음과 같이 정의합니다.
+$$
+\Phi_0(s) = -((5 - n_s - 0.5)/5 )t
+$$</p>
+
+<blockquote>
+<p>0.5는 일반적으로 agent가 n번째 subgoal과 n+1번째 subgoal 중간에 있기 때문에 이를 보정해주기 위한 값입니다.</p>
+</blockquote>
+
+<p>또 다른 potential-function으로 10 x 10 grid world 환경에서 사용했던 $\hat{V}_M(s)​$를 사용합니다.
+$$
+\Phi_1(s) = \hat{V}_M(s)  = - {MANHATTAN}(s, GOAL) / 0.8
+$$
+이렇게 정의한 potential function을 통해 실험한 결과는 다음과 같습니다.</p>
+
+<p><img src="https://user-images.githubusercontent.com/17582508/59764671-3832fb80-92d7-11e9-8c87-c57b75427551.png" width="70%"></p>
+
+<p>위 그래프는 위에서 부터 no shaping, $\Phi = \Phi_0(s)$, $\Phi = \Phi_1(s)$에 해당합니다. 이전 실험에서 정의한 $\Phi_1$ 뿐만 아니라 새로 정의한 $\Phi_0$을 사용하였을때에도 마찬가지로 shaping을 사용하지 않은 경우보다 학습속도가 향상되었음을 확인 할 수 있습니다.</p>
+
+<h2 id="discussion-and-conclusions">Discussion and Conclusions</h2>
+
+<hr />
+
+<p>이번 논문에서는 reward shaping을 위한 function $F$를 제안하였습니다. $F$는 potential-based shaping reward $\gamma \Phi(s&rsquo;) - \Phi$로 정의하며 이것이 (near-) optimal을 유지하는 shaping reward임을 증명하였습니다. 또한 실험을 통해 distance-based 환경과 subgoal-based 환경에서 potential function을 정의해보고 성능이 향상됨을 확인하였습니다. 이번 논문에서 알아본 potential-based shaping function의 형태는 추후 IRL과 이후의 reward shaping 논문에서 계속해서 사용되고 인용됩니다.</p>
+
+<h2 id="reference">Reference</h2>
+
+<hr />
+
+<p><a id="ref_1"></a>
+<strong>[1]</strong> A. Y. Ng et al., &ldquo;Policy invariance under reward transformation: Therory and application to reward shaping.&rdquo; Proceedings of the Sixteenth International Conference on Machine Learning(pp.278-287), 1999.</p>
+
+<p><a id="ref_2"></a>
+<strong>[2]</strong> Sutton, R. and Barto, A., &ldquo;3.4 Unified Notation for Episodic and Continuing,&rdquo; in <em>Reinforcement Learning: An Introduction,</em> 2nd ed., MIT Press, 2018.</p>
+
+    </div>
+
+    
+
+
+
+    
+      
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+  
+
+
+
+
+
+
+	
+	
+	
+	
+	
+	<div class="media author-card" itemscope itemtype="http://schema.org/Person">
+	  
+	  
+	  <img class="portrait mr-3" src="/author/kyunghwan-kim/avatar_hu3f0f1d3e6d6bb110b242720a0647b256_21333_250x250_fill_q90_lanczos_center.jpg" itemprop="image" alt="Avatar">
+	  
+	  <div class="media-body">
+	    <h5 class="card-title" itemprop="name"><a href="/authors/kyunghwan-kim">Kyunghwan Kim</a></h5>
+	    <h6 class="card-subtitle">AI Researcher</h6>
+	    
+	    <ul class="network-icon" aria-hidden="true">
+	      
+	      
+	      
+	      
+		
+	      
+	      
+	      
+	      
+	      
+	      <li>
+		<a itemprop="sameAs" href="mailto:kh.kim@medipixel.io" >
+		  <i class="fas fa-envelope"></i>
+		</a>
+	      </li>
+	      
+	      
+	      
+	      
+		
+	      
+	      
+	      
+	      
+	      
+		
+	      
+	      <li>
+		<a itemprop="sameAs" href="https://github.com/mrsyee" target="_blank" rel="noopener">
+		  <i class="fab fa-github"></i>
+		</a>
+	      </li>
+	      
+	      
+	      
+	      
+		
+	      
+	      
+	      
+	      
+	      
+		
+	      
+	      <li>
+		<a itemprop="sameAs" href="https://www.facebook.com/blue2856" target="_blank" rel="noopener">
+		  <i class="fab fa-facebook"></i>
+		</a>
+	      </li>
+	      
+	      
+	      
+	      
+		
+	      
+	      
+	      
+	      
+	      
+		
+	      
+	      <li>
+		<a itemprop="sameAs" href="https://www.linkedin.com/in/kyunghwan-kim-0739a314a" target="_blank" rel="noopener">
+		  <i class="fab fa-linkedin"></i>
+		</a>
+	      </li>
+	      
+	    </ul>
+	  </div>
+	</div>
+	
+	
+
+
+
+	
+	
+	
+	
+	
+	<div class="media author-card" itemscope itemtype="http://schema.org/Person">
+	  
+	  
+	  <img class="portrait mr-3" src="/author/curt-park/avatar_hu8ee43a8df99d47ce8b37e3594b3f7bde_8565_250x250_fill_q90_lanczos_center.jpg" itemprop="image" alt="Avatar">
+	  
+	  <div class="media-body">
+	    <h5 class="card-title" itemprop="name"><a href="/authors/curt-park">Curt Park</a></h5>
+	    <h6 class="card-subtitle">AI Researcher</h6>
+	    
+	    <ul class="network-icon" aria-hidden="true">
+	      
+	      
+	      
+	      
+		
+	      
+	      
+	      
+	      
+	      
+	      <li>
+		<a itemprop="sameAs" href="mailto:curt.park@medipixel.io" >
+		  <i class="fas fa-envelope"></i>
+		</a>
+	      </li>
+	      
+	      
+	      
+	      
+		
+	      
+	      
+	      
+	      
+	      
+		
+	      
+	      <li>
+		<a itemprop="sameAs" href="https://github.com//Curt-Park" target="_blank" rel="noopener">
+		  <i class="fab fa-github"></i>
+		</a>
+	      </li>
+	      
+	      
+	      
+	      
+		
+	      
+	      
+	      
+	      
+	      
+		
+	      
+	      <li>
+		<a itemprop="sameAs" href="https://www.facebook.com/jinwoo.curt.park" target="_blank" rel="noopener">
+		  <i class="fab fa-facebook"></i>
+		</a>
+	      </li>
+	      
+	      
+	      
+	      
+		
+	      
+	      
+	      
+	      
+	      
+		
+	      
+	      <li>
+		<a itemprop="sameAs" href="https://www.linkedin.com/in/curt-park/" target="_blank" rel="noopener">
+		  <i class="fab fa-linkedin"></i>
+		</a>
+	      </li>
+	      
+	    </ul>
+	  </div>
+	</div>
+	
+	
+
+
+      
+      
+    
+
+    
+
+    
+
+
+  </div>
+</article>
+
+<div class="container">
+  <footer class="site-footer">
+  
+
+  <p class="powered-by">
+    
+
+    Powered by the
+    <a href="https://sourcethemes.com/academic/" target="_blank" rel="noopener">Academic theme</a> for
+    <a href="https://gohugo.io" target="_blank" rel="noopener">Hugo</a>.
+
+    
+    <span class="float-right" aria-hidden="true">
+      <a href="#" id="back_to_top">
+        <span class="button_icon">
+          <i class="fas fa-chevron-up fa-2x"></i>
+        </span>
+      </a>
+    </span>
+    
+  </p>
+</footer>
+
+</div>
+
+
+<div id="modal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Cite</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <pre><code class="tex hljs"></code></pre>
+      </div>
+      <div class="modal-footer">
+        <a class="btn btn-outline-primary my-1 js-copy-cite" href="#" target="_blank">
+          <i class="fas fa-copy"></i> Copy
+        </a>
+        <a class="btn btn-outline-primary my-1 js-download-cite" href="#" target="_blank">
+          <i class="fas fa-download"></i> Download
+        </a>
+        <div id="modal-error"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+    
+    
+    <script src="/js/mathjax-config.js"></script>
+    
+
+    
+    
+    
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.imagesloaded/4.1.4/imagesloaded.pkgd.min.js" integrity="sha256-lqvxZrPLtfffUl2G/e7szqSvPBILGbwmsGE1MKlOi0Q=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.isotope/3.0.6/isotope.pkgd.min.js" integrity="sha256-CBrpuqrMhXwcLLUd5tvQ4euBHCdh7wGlDfNz8vbu/iI=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.js" integrity="sha256-X5PoE3KU5l+JcX+w09p/wHl9AzK333C4hJ2I9S5mD4M=" crossorigin="anonymous"></script>
+
+      
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/highlight.min.js" integrity="sha256-aYTdUrn6Ow1DDgh5JTc3aDGnnju48y/1c8s1dgkYPQ8=" crossorigin="anonymous"></script>
+        
+        <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/languages/python.min.js"></script>
+        
+      
+
+      
+      
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS_CHTML-full" integrity="sha256-GhM+5JHb6QUzOQPXSJLEWP7R73CbkisjzK5Eyij4U9w=" crossorigin="anonymous" async></script>
+      
+    
+
+    
+    
+
+    
+    
+    
+
+    
+    
+    <script>hljs.initHighlightingOnLoad();</script>
+    
+
+    
+    
+    <script>
+      const search_index_filename = "/index.json";
+      const i18n = {
+        'placeholder': "Search...",
+        'results': "results found",
+        'no_results': "No results found"
+      };
+      const content_type = {
+        'post': "Posts",
+        'project': "Projects",
+        'publication' : "Publications",
+        'talk' : "Talks"
+        };
+    </script>
+    
+
+    
+    
+
+    
+    
+    <script id="search-hit-fuse-template" type="text/x-template">
+      <div class="search-hit" id="summary-{{key}}">
+      <div class="search-hit-content">
+        <div class="search-hit-name">
+          <a href="{{relpermalink}}">{{title}}</a>
+          <div class="article-metadata search-hit-type">{{type}}</div>
+          <p class="search-hit-description">{{snippet}}</p>
+        </div>
+      </div>
+      </div>
+    </script>
+    
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.1/fuse.min.js" integrity="sha256-VzgmKYmhsGNNN4Ph1kMW+BjoYJM2jV5i4IlFoeZA9XI=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js" integrity="sha256-4HLtjeVgH0eIB3aZ9mLYF6E8oU5chNdjU6p6rrXpl9U=" crossorigin="anonymous"></script>
+    
+
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+      
+    
+    
+    
+    
+    <script src="/js/academic.min.3258b3a711acd6208568ec000de4beec.js"></script>
+
+  </body>
+</html>
+

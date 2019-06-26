@@ -12,29 +12,29 @@
     
     
     <item>
-      <title>Anchor</title>
-      <link>/post/anchor-target/</link>
+      <title>[Tutorial] Anchor</title>
+      <link>/post/2019-06-14-anchor-target/</link>
       <pubDate>Fri, 14 Jun 2019 13:15:00 +0900</pubDate>
       
-      <guid>/post/anchor-target/</guid>
+      <guid>/post/2019-06-14-anchor-target/</guid>
       <description>Anchor algorithm in MMDetection</description>
     </item>
     
     <item>
-      <title>Image Thresholding</title>
-      <link>/post/image-thresholding/</link>
+      <title>[Tutorial] Image Thresholding</title>
+      <link>/post/2019-06-07-image-thresholding/</link>
       <pubDate>Fri, 07 Jun 2019 12:00:00 +0900</pubDate>
       
-      <guid>/post/image-thresholding/</guid>
+      <guid>/post/2019-06-07-image-thresholding/</guid>
       <description>Image threshold using OpenCV</description>
     </item>
     
     <item>
-      <title>Histogram</title>
-      <link>/post/histogram/</link>
+      <title>[Tutorial] Histogram</title>
+      <link>/post/2019-05-31-histogram/</link>
       <pubDate>Fri, 31 May 2019 12:00:00 +0900</pubDate>
       
-      <guid>/post/histogram/</guid>
+      <guid>/post/2019-05-31-histogram/</guid>
       <description>Histogram using OpenCV</description>
     </item>
     
@@ -50,7 +50,7 @@
     <item>
       <title>Posts</title>
       <link>/post/</link>
-      <pubDate>Fri, 14 Jun 2019 13:15:00 +0900</pubDate>
+      <pubDate>Wed, 26 Jun 2019 13:15:00 +0900</pubDate>
       
       <guid>/post/</guid>
       <description></description>
