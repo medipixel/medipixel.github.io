@@ -6,10 +6,28 @@
     <description>Recent content in Authors on Medipixel</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 26 Jun 2019 13:15:00 +0900</lastBuildDate>
+    <lastBuildDate>Fri, 25 Oct 2019 10:00:00 +0900</lastBuildDate>
     
 	<atom:link href="/authors/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>chaehyeuk-lee</title>
+      <link>/authors/chaehyeuk-lee/</link>
+      <pubDate>Fri, 25 Oct 2019 10:00:00 +0900</pubDate>
+      
+      <guid>/authors/chaehyeuk-lee/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>kyunghwan-kim</title>
+      <link>/authors/kyunghwan-kim/</link>
+      <pubDate>Fri, 25 Oct 2019 10:00:00 +0900</pubDate>
+      
+      <guid>/authors/kyunghwan-kim/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>curt-park</title>
@@ -17,15 +35,6 @@
       <pubDate>Wed, 26 Jun 2019 13:15:00 +0900</pubDate>
       
       <guid>/authors/curt-park/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>kyunghwan-kim</title>
-      <link>/authors/kyunghwan-kim/</link>
-      <pubDate>Wed, 26 Jun 2019 13:15:00 +0900</pubDate>
-      
-      <guid>/authors/kyunghwan-kim/</guid>
       <description></description>
     </item>
     
