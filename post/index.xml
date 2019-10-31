@@ -6,7 +6,7 @@
     <description>Recent content in Posts on Medipixel</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 25 Oct 2019 10:00:00 +0900</lastBuildDate>
+    <lastBuildDate>Thu, 31 Oct 2019 10:00:00 +0900</lastBuildDate>
     
 	<atom:link href="/post/index.xml" rel="self" type="application/rss+xml" />
     
@@ -14,7 +14,7 @@
     <item>
       <title>강화학습의 혈관 속 탐험 (1) - 로봇과 심혈관 중재시술</title>
       <link>/post/2019-10-25-adventure_of_rl_in_vessel_1/</link>
-      <pubDate>Fri, 25 Oct 2019 10:00:00 +0900</pubDate>
+      <pubDate>Thu, 31 Oct 2019 10:00:00 +0900</pubDate>
       
       <guid>/post/2019-10-25-adventure_of_rl_in_vessel_1/</guid>
       <description>Introduction to guide-wire control for PCI by RL - PCI aided by Robot</description>
