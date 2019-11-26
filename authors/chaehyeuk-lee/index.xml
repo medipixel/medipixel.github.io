@@ -6,17 +6,17 @@
     <description>Recent content in chaehyeuk-lee on Medipixel</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 20 Nov 2019 13:00:00 +0900</lastBuildDate>
+    <lastBuildDate>Tue, 26 Nov 2019 10:00:00 +0900</lastBuildDate>
     
 	<atom:link href="/authors/chaehyeuk-lee/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>강화학습의 혈관 속 탐험 (2) - 강화학습과 제어 이론의 비교</title>
-      <link>/post/2019-10-25-adventure_of_rl_in_vessel_2/</link>
-      <pubDate>Wed, 20 Nov 2019 13:00:00 +0900</pubDate>
+      <link>/post/2019-11-26-adventure_of_rl_in_vessel_2/</link>
+      <pubDate>Tue, 26 Nov 2019 10:00:00 +0900</pubDate>
       
-      <guid>/post/2019-10-25-adventure_of_rl_in_vessel_2/</guid>
+      <guid>/post/2019-11-26-adventure_of_rl_in_vessel_2/</guid>
       <description>Introduction to guide-wire control for PCI by RL (2) - RL vs Control Theory</description>
     </item>
     
