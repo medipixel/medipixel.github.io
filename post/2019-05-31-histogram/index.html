@@ -93,6 +93,20 @@
 
   
   
+    <script>
+      window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+      ga('create', 'UA-153209244-1', 'auto');
+      
+      ga('require', 'eventTracker');
+      ga('require', 'outboundLinkTracker');
+      ga('require', 'urlChangeTracker');
+      ga('send', 'pageview');
+    </script>
+    <script async src="//www.google-analytics.com/analytics.js"></script>
+    
+    <script async src="https://cdnjs.cloudflare.com/ajax/libs/autotrack/2.4.1/autotrack.js" integrity="sha512-HUmooslVKj4m6OBu0OgzjXXr+QuFYy/k7eLI5jdeEy/F4RSgMn6XRWRGkFi5IFaFgy7uFTkegp3Z0XnJf3Jq+g==" crossorigin="anonymous"></script>
+    
+  
   
 
   
@@ -491,18 +505,19 @@ img = cv2.imread(sample_image_path + sample_image, cv2.IMREAD_GRAYSCALE)
 <h2 id="data-description">Data description</h2>
 
 <ul>
-<li>본 예제에서 사용할 데이터는 아래와 같습니다.
+<li><p>본 예제에서 사용할 데이터는 아래와 같습니다.</p>
 
 <ul>
 <li>거의 대부분의 OpenCV 예제에서 볼 수 있는 Lena 입니다.</li>
-<li>단순한 특징의 배경과 복잡한 특징의 인물이 함께 존재하여 다양한 condition을 test하기 좋은 data로 널리 알려져 있습니다.</li>
-</ul></li>
-</ul>
+
+<li><p>단순한 특징의 배경과 복잡한 특징의 인물이 함께 존재하여 다양한 condition을 test하기 좋은 data로 널리 알려져 있습니다.</p>
 
 <pre><code class="language-python">plt.imshow(img, cmap='gray')
 plt.title('Lena')
 plt.show()
-</code></pre>
+</code></pre></li>
+</ul></li>
+</ul>
 
 
 
@@ -523,24 +538,25 @@ plt.show()
 <ul>
 <li>Histogram이란, 이미지에서 특정 픽셀값의 등장 빈도를 전체 픽셀 갯수 대비 비율로 나타낸 그래프 입니다.</li>
 <li>이미지의 전체적인 명암 분포를 한 눈에 확인할 수 있습니다.</li>
-<li>두 가지 예제 코드를 통해 Histogram에 대해 알아보겠습니다.</li>
-</ul>
+
+<li><p>두 가지 예제 코드를 통해 Histogram에 대해 알아보겠습니다.</p>
 
 <pre><code class="language-python">def plot_histogram_npy(img):
-    w, h = img.shape
-    w, h = int(w), int(h)
-    hist_cnt = np.zeros(255)
-    hist = np.zeros(255)
-    for j in range(h):
-        for i in range(w):
-            hist_cnt[img[j, i]] += 1
-    hist = hist_cnt / (w * h)
-    plt.plot(hist)
-    plt.title('Histogram of Lena, numpy', size=15)
+w, h = img.shape
+w, h = int(w), int(h)
+hist_cnt = np.zeros(255)
+hist = np.zeros(255)
+for j in range(h):
+    for i in range(w):
+        hist_cnt[img[j, i]] += 1
+hist = hist_cnt / (w * h)
+plt.plot(hist)
+plt.title('Histogram of Lena, numpy', size=15)
 </code></pre>
 
 <pre><code class="language-python">plot_histogram_npy(img)
-</code></pre>
+</code></pre></li>
+</ul>
 
 
 
@@ -601,26 +617,27 @@ plt.show()
 <ul>
 <li>히스토그램 평활화 기법은 이미지가 전체적으로 골고루 어둡거나 골고루 밝아서 특징을 분간하기 어려울 때 자주 쓰입니다.</li>
 </ul></li>
-<li>설명이 난해하니 코드를 통해 자세히 알아보겠습니다.</li>
-</ul>
+
+<li><p>설명이 난해하니 코드를 통해 자세히 알아보겠습니다.</p>
 
 <pre><code class="language-python">def show_stacked_histogram(img):
-    stack_hist = np.zeros(255, dtype=np.float32)
-    eq_hist = np.zeros(255, dtype=np.float32)
-    w, h = img.shape
-    hist = cv2.calcHist([img], [0], None, [256], [0, 256])
-    for i in range(255):
-        stack_hist[i] = np.sum(hist[:i])
-        eq_hist[i] = round(stack_hist[i])
-    eq_hist /= (w * h)
+stack_hist = np.zeros(255, dtype=np.float32)
+eq_hist = np.zeros(255, dtype=np.float32)
+w, h = img.shape
+hist = cv2.calcHist([img], [0], None, [256], [0, 256])
+for i in range(255):
+    stack_hist[i] = np.sum(hist[:i])
+    eq_hist[i] = round(stack_hist[i])
+eq_hist /= (w * h)
 
-    plt.plot(eq_hist)
-    plt.title('Stacked Histogram', size=15)
-    plt.show()
+plt.plot(eq_hist)
+plt.title('Stacked Histogram', size=15)
+plt.show()
 </code></pre>
 
 <pre><code class="language-python">show_stacked_histogram(img)
-</code></pre>
+</code></pre></li>
+</ul>
 
 
 
@@ -649,12 +666,13 @@ plt.show()
 </ul></li>
 <li><strong>히스토그램 평활화</strong>는 이와 같이 <strong>균일하지 않은 픽셀값의 분포를 고르게</strong> 만드는 작업입니다.
 &mdash;</li>
-<li>그럼 이제 히스토그램 평활화를 해보겠습니다.</li>
-</ul>
+
+<li><p>그럼 이제 히스토그램 평활화를 해보겠습니다.</p>
 
 <pre><code class="language-python">equ = cv2.equalizeHist(img)
 show_stacked_histogram(equ)
-</code></pre>
+</code></pre></li>
+</ul>
 
 
 
@@ -672,8 +690,8 @@ show_stacked_histogram(equ)
 <li>OpenCV에 구현되어있는 cv2.equalizeHist()함수를 통해 평활화한 Lena의 Histogram입니다.</li>
 <li>이제 Histogram 누적치가 직선 형태라는 말이 확실하게 이해 되실 것 같습니다.
 &mdash;</li>
-<li>마지막으로 이렇게 변화시킨 이미지가 원본 이미지와 어떻게 다른지 확인해 보겠습니다.</li>
-</ul>
+
+<li><p>마지막으로 이렇게 변화시킨 이미지가 원본 이미지와 어떻게 다른지 확인해 보겠습니다.</p>
 
 <pre><code class="language-python">plt.figure(figsize=(8,8))
 
@@ -686,7 +704,8 @@ plt.imshow(equ, cmap='gray')
 plt.title('Equalized Lena')
 
 plt.show()
-</code></pre>
+</code></pre></li>
+</ul>
 
 
 
@@ -1048,7 +1067,7 @@ plt.show()
     
     
     
-    <script src="/js/academic.min.3258b3a711acd6208568ec000de4beec.js"></script>
+    <script src="/js/academic.min.ee8463f2a394889d45e169a983fe913d.js"></script>
 
   </body>
 </html>

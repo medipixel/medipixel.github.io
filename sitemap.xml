@@ -1,39 +1,40 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
     <loc>/authors/</loc>
-    <lastmod>2019-10-31T10:00:00+09:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>/</loc>
-    <lastmod>2019-10-31T10:00:00+09:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>/post/</loc>
-    <lastmod>2019-10-31T10:00:00+09:00</lastmod>
+    <lastmod>2019-11-20T13:00:00+09:00</lastmod>
   </url>
   
   <url>
     <loc>/authors/chaehyeuk-lee/</loc>
-    <lastmod>2019-10-31T10:00:00+09:00</lastmod>
-    <priority>0</priority>
+    <lastmod>2019-11-20T13:00:00+09:00</lastmod>
   </url>
   
   <url>
     <loc>/authors/kyunghwan-kim/</loc>
-    <lastmod>2019-10-31T10:00:00+09:00</lastmod>
-    <priority>0</priority>
+    <lastmod>2019-11-20T13:00:00+09:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/</loc>
+    <lastmod>2019-11-20T13:00:00+09:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/post/</loc>
+    <lastmod>2019-11-20T13:00:00+09:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/post/2019-10-25-adventure_of_rl_in_vessel_2/</loc>
+    <lastmod>2019-11-20T13:00:00+09:00</lastmod>
   </url>
   
   <url>
     <loc>/post/2019-10-25-adventure_of_rl_in_vessel_1/</loc>
-    <lastmod>2019-10-31T10:00:00+09:00</lastmod>
+    <lastmod>2019-10-25T10:00:00+09:00</lastmod>
   </url>
   
   <url>
@@ -44,7 +45,6 @@
   <url>
     <loc>/authors/curt-park/</loc>
     <lastmod>2019-06-26T13:15:00+09:00</lastmod>
-    <priority>0</priority>
   </url>
   
   <url>
@@ -55,13 +55,11 @@
   <url>
     <loc>/authors/whi-kwon/</loc>
     <lastmod>2019-06-14T13:15:00+09:00</lastmod>
-    <priority>0</priority>
   </url>
   
   <url>
     <loc>/authors/young-kim/</loc>
     <lastmod>2019-06-14T13:15:00+09:00</lastmod>
-    <priority>0</priority>
   </url>
   
   <url>
@@ -82,7 +80,6 @@
   <url>
     <loc>/authors/hyungkyu-kim/</loc>
     <lastmod>2018-12-18T22:22:17+09:00</lastmod>
-    <priority>0</priority>
   </url>
   
   <url>
@@ -121,17 +118,14 @@
   
   <url>
     <loc>/author/</loc>
-    <priority>0</priority>
   </url>
   
   <url>
     <loc>/categories/</loc>
-    <priority>0</priority>
   </url>
   
   <url>
     <loc>/publication_types/</loc>
-    <priority>0</priority>
   </url>
   
   <url>
@@ -144,12 +138,6 @@
   
   <url>
     <loc>/tags/</loc>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>/authors/youngeon-kim/</loc>
-    <priority>0</priority>
   </url>
   
 </urlset>

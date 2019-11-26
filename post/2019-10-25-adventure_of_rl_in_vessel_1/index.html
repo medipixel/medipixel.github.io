@@ -93,6 +93,20 @@
 
   
   
+    <script>
+      window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+      ga('create', 'UA-153209244-1', 'auto');
+      
+      ga('require', 'eventTracker');
+      ga('require', 'outboundLinkTracker');
+      ga('require', 'urlChangeTracker');
+      ga('send', 'pageview');
+    </script>
+    <script async src="//www.google-analytics.com/analytics.js"></script>
+    
+    <script async src="https://cdnjs.cloudflare.com/ajax/libs/autotrack/2.4.1/autotrack.js" integrity="sha512-HUmooslVKj4m6OBu0OgzjXXr+QuFYy/k7eLI5jdeEy/F4RSgMn6XRWRGkFi5IFaFgy7uFTkegp3Z0XnJf3Jq+g==" crossorigin="anonymous"></script>
+    
+  
   
 
   
@@ -114,20 +128,20 @@
   
   <meta property="og:site_name" content="Medipixel">
   <meta property="og:url" content="/post/2019-10-25-adventure_of_rl_in_vessel_1/">
-  <meta property="og:title" content="강화학습의 혈관 속 탐험 (1) - 로봇과 심혈관 중재시술 | Medipixel">
+  <meta property="og:title" content="강화학습의 혈관 속 탐험 (1) - 로봇과 심혈관 중재 시술 | Medipixel">
   <meta property="og:description" content="Introduction to guide-wire control for PCI by RL - PCI aided by Robot"><meta property="og:image" content="/img/icon-192.png">
   <meta property="og:locale" content="en-us">
   
-  <meta property="article:published_time" content="2019-10-31T10:00:00&#43;09:00">
+  <meta property="article:published_time" content="2019-10-25T10:00:00&#43;09:00">
   
-  <meta property="article:modified_time" content="2019-10-31T10:00:00&#43;09:00">
-  
-
+  <meta property="article:modified_time" content="2019-10-25T10:00:00&#43;09:00">
   
 
   
 
-  <title>강화학습의 혈관 속 탐험 (1) - 로봇과 심혈관 중재시술 | Medipixel</title>
+  
+
+  <title>강화학습의 혈관 속 탐험 (1) - 로봇과 심혈관 중재 시술 | Medipixel</title>
 
 </head>
 <body id="top" data-spy="scroll" data-target="#TableOfContents" data-offset="71" >
@@ -323,7 +337,7 @@
   
   
 <div class="article-container pt-3">
-  <h1 itemprop="name">강화학습의 혈관 속 탐험 (1) - 로봇과 심혈관 중재시술</h1>
+  <h1 itemprop="name">강화학습의 혈관 속 탐험 (1) - 로봇과 심혈관 중재 시술</h1>
 
   
 
@@ -332,8 +346,8 @@
 
 
 
-<meta content="2019-10-31 10:00:00 &#43;0900 KST" itemprop="datePublished">
-<meta content="2019-10-31 10:00:00 &#43;0900 KST" itemprop="dateModified">
+<meta content="2019-10-25 10:00:00 &#43;0900 KST" itemprop="datePublished">
+<meta content="2019-10-25 10:00:00 &#43;0900 KST" itemprop="dateModified">
 
 <div class="article-metadata">
 
@@ -358,7 +372,7 @@
     
       
     
-    <time>Oct 31, 2019</time>
+    <time>Oct 25, 2019</time>
   </span>
   
 
@@ -448,13 +462,38 @@
     <div class="article-style" itemprop="articleBody">
       
 
+<h4 id="강화학습의-혈관-속-탐험-시리즈">강화학습의 혈관 속 탐험 시리즈 </h4>
+
+<p><a href="/post/2019-10-25-adventure_of_rl_in_vessel_1/" target="_blank">강화학습의 혈관 속 탐험 (1) - 로봇과 심혈관 중재 시술</a><br />
+<a href="/post/2019-10-25-adventure_of_rl_in_vessel_2/" target="_blank">강화학습의 혈관 속 탐험 (2) - 강화학습과 제어 이론의 비교</a></p>
+
+<h2 id="intro">Intro</h2>
+
+<hr />
+
 <p>이번 포스트에서는 저희가 연구 중인 <strong>강화학습을 이용한 심혈관 중재시술 로봇 제어</strong>에 대해 소개하려고 합니다. 처음 이 주제에 대해 들으시면 &ldquo;심혈관 중재시술이 뭐지?&rdquo;, &ldquo;왜 로봇을 제어를 하는데 강화학습을 쓰지?&rdquo; 와 같이 여러 궁금증이 먼저 생기실 것입니다. 그래서 포스트를 통해 이런 궁금증을 해소하는 시간을 가지려 합니다.</p>
+
+<ul>
+<li><a href="#ref_12">심혈관 중재시술?</a>
+
+<ul>
+<li><a href="#ref_13">허혈성 심장 질환</a></li>
+<li><a href="#ref_14">관상동맥 중재시술(PCI)</a></li>
+</ul></li>
+<li><a href="#ref_15">심혈관 중재시술 자동화의 필요성</a></li>
+<li><a href="#ref_16">가이드와이어 제어</a></li>
+<li><a href="#ref_17">마치며</a></li>
+</ul>
+
+<p><a id="ref_12"></a></p>
 
 <h2 id="심혈관-중재시술">심혈관 중재시술?</h2>
 
 <hr />
 
 <p>저희는 심혈관 질환의 진단 및 치료를 돕는 솔루션을 연구 개발 하고 있습니다. 심혈관 질환에는 여러 종류가 있고 그에 따른 치료방법도 다양합니다. 그 중 현재 저희가 연구하는 내용과 가장 연관이 있는  <strong>허혈성 심장 질환</strong>과 이를 치료하기 위한 <strong>심혈관 중재시술</strong>에 대해 설명하려 합니다.</p>
+
+<p><a id="ref_13"></a></p>
 
 <h3 id="허혈성-심장-질환">허혈성 심장 질환</h3>
 
@@ -465,6 +504,8 @@
 <p>허혈성 심장 질환은 심장에 혈액을 공급해주는 혈관인 관상동맥에 지방질, 콜레스테롤, 칼슘 등이 쌓여 혈관이 좁아지거나 막혀 심장근육의 일부에 혈액 공급이 부족하여 발생하는 질환입니다 <a href="#ref_2">[2]</a>. 허혈성 심장 질환은 국내 사망 원인 통계를 보면 암에 이어 2위를 차지하고 있으며 전세계 통계에서는 1위를 차지하고 있습니다 <a href="#ref_3">[3]</a>. 그만큼 많은 사람들이 이 질환을 겪고 있으며 사망에 이를 정도로 위험한 질환이라는 것을 알 수 있습니다. 허혈성 심장 질환에는 협심증, 심근경색 등이 있습니다. 아래 이미지는 심혈관 질환의 예시입니다 <a href="#ref_4">[4]</a>.</p>
 
 <p><center><img src="https://user-images.githubusercontent.com/17582508/67544094-1c30e200-f72f-11e9-8aff-979103817187.png" width="90%"></center></p>
+
+<p><a id="ref_14"></a></p>
 
 <h3 id="관상동맥-중재시술-pci">관상동맥 중재시술(PCI)</h3>
 
@@ -480,6 +521,8 @@
 <p>이 때, 시술자는 조영제와 X-ray를 이용한 <strong>혈관조영영상</strong>을 이용해 병변을 확인하고 시술 위치를 파악합니다. 시술이 진행되는 도중에도 계속해서 혈관조영영상을 확인하여 정확한 시술을 진행합니다. 아래는 혈관조영영상의 일부입니다 <a href="#ref_7">[7]</a>.</p>
 
 <p><center><img src="https://user-images.githubusercontent.com/17582508/67552998-324a9c80-f747-11e9-8b0b-b5c979a6a9a7.png" width="80%"></center></p>
+
+<p><a id="ref_15"></a></p>
 
 <h2 id="심혈관-중재시술-자동화의-필요성">심혈관 중재시술 자동화의 필요성</h2>
 
@@ -509,6 +552,8 @@
 
 <p>위와 같은 점들을 개선하기 위해 PCI 로봇에 대한 연구가 진행되고 있습니다. 대표적으로 Corindus의 시술 로봇이 있습니다 <a href="#ref_8">[8]</a>. 저희는 이보다 더 나아가 인공지능으로 로봇을 제어하여 시술을 <strong>자동화</strong>하는 연구를 진행하고 있습니다. PCI의 자동화를 통해 환자와 시술자 모두의 부담을 줄이게 되며, 특히 이상적으로 자동화가 된다면 시술의 숙련도에 따른 차이를 없앨 수 있습니다.</p>
 
+<p><a id="ref_16"></a></p>
+
 <h2 id="가이드와이어-제어">가이드와이어 제어</h2>
 
 <hr />
@@ -518,6 +563,8 @@
 <p><center><img src="https://user-images.githubusercontent.com/17582508/67835790-3b17e580-fb2e-11e9-9f63-72a19a667a01.gif" width="80%"></center></p>
 
 <p>위 이미지 <a href="#ref_9">[9]</a>에서 의사가 가이드와이어를 조작하는 모습과 로봇(Manipulator)를 이용해 가이드와이어를 조작하는 모습을 볼 수 있습니다. 실제 시술에서 시술자는 가이드와이어를 병변 부위로 이동시키기 위해 <strong>회전(rotation)</strong>과 <strong>전후진(translation)</strong> 동작을 합니다. 저희가 이용하는 로봇도 이러한 두 가지 동작을 재현할 수 있도록 설계되었습니다. 가이드와이어의 상태에 따라 두 가지 동작 중 어떤 동작을 할 지 선택하는 것이 인공지능의 역할입니다.</p>
+
+<p><a id="ref_17"></a></p>
 
 <h2 id="마치며">마치며</h2>
 
@@ -875,7 +922,7 @@
     
     
     
-    <script src="/js/academic.min.3258b3a711acd6208568ec000de4beec.js"></script>
+    <script src="/js/academic.min.ee8463f2a394889d45e169a983fe913d.js"></script>
 
   </body>
 </html>

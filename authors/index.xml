@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Authors on Medipixel</title>
@@ -6,7 +6,7 @@
     <description>Recent content in Authors on Medipixel</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 31 Oct 2019 10:00:00 +0900</lastBuildDate>
+    <lastBuildDate>Wed, 20 Nov 2019 13:00:00 +0900</lastBuildDate>
     
 	<atom:link href="/authors/index.xml" rel="self" type="application/rss+xml" />
     
@@ -14,7 +14,7 @@
     <item>
       <title>chaehyeuk-lee</title>
       <link>/authors/chaehyeuk-lee/</link>
-      <pubDate>Thu, 31 Oct 2019 10:00:00 +0900</pubDate>
+      <pubDate>Wed, 20 Nov 2019 13:00:00 +0900</pubDate>
       
       <guid>/authors/chaehyeuk-lee/</guid>
       <description></description>
@@ -23,7 +23,7 @@
     <item>
       <title>kyunghwan-kim</title>
       <link>/authors/kyunghwan-kim/</link>
-      <pubDate>Thu, 31 Oct 2019 10:00:00 +0900</pubDate>
+      <pubDate>Wed, 20 Nov 2019 13:00:00 +0900</pubDate>
       
       <guid>/authors/kyunghwan-kim/</guid>
       <description></description>
@@ -62,15 +62,6 @@
       <pubDate>Tue, 18 Dec 2018 22:22:17 +0900</pubDate>
       
       <guid>/authors/hyungkyu-kim/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>YoungEon Kim</title>
-      <link>/authors/youngeon-kim/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/authors/youngeon-kim/</guid>
       <description></description>
     </item>
     

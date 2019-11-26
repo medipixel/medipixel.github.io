@@ -93,6 +93,20 @@
 
   
   
+    <script>
+      window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+      ga('create', 'UA-153209244-1', 'auto');
+      
+      ga('require', 'eventTracker');
+      ga('require', 'outboundLinkTracker');
+      ga('require', 'urlChangeTracker');
+      ga('send', 'pageview');
+    </script>
+    <script async src="//www.google-analytics.com/analytics.js"></script>
+    
+    <script async src="https://cdnjs.cloudflare.com/ajax/libs/autotrack/2.4.1/autotrack.js" integrity="sha512-HUmooslVKj4m6OBu0OgzjXXr+QuFYy/k7eLI5jdeEy/F4RSgMn6XRWRGkFi5IFaFgy7uFTkegp3Z0XnJf3Jq+g==" crossorigin="anonymous"></script>
+    
+  
   
 
   
@@ -596,12 +610,12 @@ gt_bboxes_list = torch.FloatTensor([[32, 32, 32*3, 32*3]]).to(device)
 이 <code>base_anchor</code>가 실제 실행시에는 <code>scales</code> * <code>ratios</code>의 개수만큼 생성되며 feature map 의 각 grid cell의 위치에 존재하게 됩니다.</p>
 
 <ul>
-<li>각 feature map의 grid cell은 원래의 이미지를 기준으로 하는 좌표를 가지고 있습니다. 이 좌표들마다 <code>base_anchor</code>를 위치시키면 (feature map 기준 각 grid cell에 <code>base_anchor</code>가 존재하게 되면) 이미지 기준으로 stride 만큼 띄엄띄엄 <code>base_anchor</code>가 존재하는 모습을 볼 수 있습니다.</li>
-</ul>
+<li><p>각 feature map의 grid cell은 원래의 이미지를 기준으로 하는 좌표를 가지고 있습니다. 이 좌표들마다 <code>base_anchor</code>를 위치시키면 (feature map 기준 각 grid cell에 <code>base_anchor</code>가 존재하게 되면) 이미지 기준으로 stride 만큼 띄엄띄엄 <code>base_anchor</code>가 존재하는 모습을 볼 수 있습니다.</p>
 
 <pre><code class="language-python">base_anchor = gen_base_anchors(anchor_base_size, ratios, scales[:1])
 draw_base_anchor_on_grid(base_anchor, anchor_base_size)
-</code></pre>
+</code></pre></li>
+</ul>
 
 
 
@@ -638,18 +652,18 @@ draw_base_anchor_on_grid(base_anchor, anchor_base_size)
 각 step 별 상세한 내용은 <a href="https://github.com/medipixel/Object-Detection-Tutorial/blob/master/src/anchor/anchor_generator.py" target="_blank">코드</a>를 참고해주시기 바랍니다.</p>
 
 <ul>
-<li><code>flags</code>은 anchor가 이미지를 벗어날 때 학습에서 배제하기 위한 flag 입니다.</li>
-</ul>
+<li><p><code>flags</code>은 anchor가 이미지를 벗어날 때 학습에서 배제하기 위한 flag 입니다.</p>
 
 <pre><code class="language-python">anchors, flags = get_anchors(image_shape, featmap_size, anchor_base_size,
-                             anchor_stride, scales, ratios, device)
+                         anchor_stride, scales, ratios, device)
 </code></pre>
 
 <pre><code class="language-python"># feature map 32x32 각 pixel에 9개의 anchors
 assert anchors.shape[0] == featmap_size[0] * featmap_size[1] * 9
 # anchor를 사용할 지 말지 결정하는 flags와 anchors의 개수는 같아야 합니다.
 assert len(flags) == len(anchors)
-</code></pre>
+</code></pre></li>
+</ul>
 
 <hr />
 
@@ -662,12 +676,13 @@ assert len(flags) == len(anchors)
 <li>two-stage에서는 positive anchor에 가장 overlap이 큰 gt의 class를 배정하고 negative anchor에 0을 배정해서 <a href="https://github.com/open-mmlab/mmdetection/blob/v0.6rc0/mmdet/models/anchor_heads/retina_head.py" target="_blank"><code>BBoxHead</code></a>를 학습합니다.</li>
 <li>positive anchor는 classification, regression 학습 모두에 활용됩니다. 그래야 특정 BBox에 대해서 object의 class와 BBox 좌표을 예측할 수 있게 됩니다.</li>
 <li>negative anchor는 classification에만 활용됩니다. 그 이유는 negative의 경우 background라는 정보는 가지고 있지만, 어느 위치에 물체가 있다는 정보는 가지고 있지 않기 때문입니다. <a href="#ref_5">[5]</a></li>
-<li>overlap은 <a href="https://www.pyimagesearch.com/2016/11/07/intersection-over-union-iou-for-object-detection/" target="_blank">IoU(Intersection over Union)</a>를 통해 계산합니다.</li>
-</ul>
+
+<li><p>overlap은 <a href="https://www.pyimagesearch.com/2016/11/07/intersection-over-union-iou-for-object-detection/" target="_blank">IoU(Intersection over Union)</a>를 통해 계산합니다.</p>
 
 <pre><code class="language-python">overlaps = bbox_overlaps(gt_bboxes_list, anchors)
 assert overlaps.shape == (len(gt_bboxes_list), anchors.shape[0])
-</code></pre>
+</code></pre></li>
+</ul>
 
 <p>anchor와 gt의 bbox <code>overlaps</code>인 IoU 값을 feature map에 나타내보겠습니다. 파란색 box는 gt의 위치를 나타내며 gt와 가까울 수록 IoU 값이 커지는 것을 볼 수 있습니다.</p>
 
@@ -758,11 +773,11 @@ assert torch.equal(bboxes_reversed[0], gt_bboxes_list[0])
 <li>loss는 one/two-stage network 마다 다르게 적용되나 공통적으로 regression은 <a href="https://github.com/rbgirshick/py-faster-rcnn/files/764206/SmoothL1Loss.1.pdf" target="_blank">smooth-l1</a>를, classification은 <a href="https://en.wikipedia.org/wiki/Cross_entropy" target="_blank">cross entropy</a>를 가장 많이 사용합니다.</li>
 <li>loss 계산에는 positive, negative sample을 모두 다 사용할 수는 있지만, positive sample에 비해 negative sample의 개수가 압도적으로 많으므로, 일부 정해진 숫자 만큼만의 sample을 선정하여 학습에 사용합니다. <br> (e.g. positive:negative=1:1.) <a href="#ref_7">[7]</a></li>
 <li>이렇게 anchor prediction을 구하고 그 중에 <code>neg_inds</code>, <code>pos_inds</code>에 해당하는 결과만 가져오는 과정을 거쳐 최종 예측결과인 <code>pos_neg_cls_pred</code>, <code>pos_delta_pred</code>를 구합니다.</li>
-<li>loss를 구한 뒤에 gradient descent 하는 과정은 생략하겠습니다.</li>
-</ul>
+
+<li><p>loss를 구한 뒤에 gradient descent 하는 과정은 생략하겠습니다.</p>
 
 <pre><code class="language-python">pos_neg_cls_pred, pos_delta_pred = predict_anchors(anchors.shape,
-                                                   target_deltas, sampled_neg_inds)
+                                               target_deltas, sampled_neg_inds)
 </code></pre>
 
 <pre><code class="language-python"># regression, class loss를 각각 계산합니다.
@@ -772,9 +787,9 @@ cls_loss = binary_cross_entropy(pos_neg_cls_pred, pos_neg_cls_label)
 print(&quot;cls_loss:&quot;, cls_loss)
 </code></pre>
 
-<pre><code>reg_loss: tensor(0.0795)
-cls_loss: tensor(2.7997)
-</code></pre>
+<p>reg_loss: tensor(0.0795)
+cls_loss: tensor(2.7997)</p></li>
+</ul>
 
 <hr />
 
@@ -787,11 +802,12 @@ cls_loss: tensor(2.7997)
 <li><strong>delta는 gt-anchor의 차이</strong>라는 점을 참고하시면 anchor bbox의 coordination 정보를 바탕으로 재변환을 수식적으로 풀어가는 과정을 어렵지 않게 이해하실 수 있습니다.</li>
 </ul></li>
 <li>최종적으로 object 예측 결과는 <code>cls_pred</code>가 특정 threshold 이상인 값들에 대해서 <a href="https://en.wikipedia.org/wiki/Canny_edge_detector#Non-maximum_suppression" target="_blank">Non-maximum suppresion(NMS)</a>를 통과시킨 결과입니다.</li>
-<li><code>cls_pred</code> threshold, nms가 모두 고려되었다고 가정하고 위에서 얻은 <code>pos_delta_pred</code>를 test 결과로 얻었다고 가정하겠습니다.</li>
-</ul>
+
+<li><p><code>cls_pred</code> threshold, nms가 모두 고려되었다고 가정하고 위에서 얻은 <code>pos_delta_pred</code>를 test 결과로 얻었다고 가정하겠습니다.</p>
 
 <pre><code class="language-python">pos_bboxes_pred = delta2bbox(pos_bboxes, pos_delta_pred)
-</code></pre>
+</code></pre></li>
+</ul>
 
 <p>아래 그림에서는 positve predictions에 대해서 예측한 값들을 index 순서대로 시각화해보았습니다.</p>
 
@@ -1203,7 +1219,7 @@ $$ t_x = (x - x_a) / w_a,\ t_y = (y - y_a) / h_a, <br />
     
     
     
-    <script src="/js/academic.min.3258b3a711acd6208568ec000de4beec.js"></script>
+    <script src="/js/academic.min.ee8463f2a394889d45e169a983fe913d.js"></script>
 
   </body>
 </html>

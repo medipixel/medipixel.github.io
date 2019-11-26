@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>whi-kwon on Medipixel</title>
@@ -36,24 +36,6 @@
       
       <guid>/post/2019-05-31-histogram/</guid>
       <description>Histogram using OpenCV</description>
-    </item>
-    
-    <item>
-      <title></title>
-      <link>/author/whi-kwon/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/author/whi-kwon/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Posts</title>
-      <link>/post/</link>
-      <pubDate>Thu, 31 Oct 2019 10:00:00 +0900</pubDate>
-      
-      <guid>/post/</guid>
-      <description></description>
     </item>
     
   </channel>
