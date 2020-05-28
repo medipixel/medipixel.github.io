@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>kyunghwan-kim on Medipixel</title>
@@ -6,10 +6,19 @@
     <description>Recent content in kyunghwan-kim on Medipixel</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 26 Nov 2019 10:00:00 +0900</lastBuildDate>
+    <lastBuildDate>Thu, 28 May 2020 10:00:00 +0900</lastBuildDate>
     
 	<atom:link href="/authors/kyunghwan-kim/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>강화학습의 혈관 속 탐험 (3) - 실험환경 구성과 강화학습 알고리즘 소개</title>
+      <link>/post/2020-05-28-adventure_of_rl_in_vessel_3/</link>
+      <pubDate>Thu, 28 May 2020 10:00:00 +0900</pubDate>
+      
+      <guid>/post/2020-05-28-adventure_of_rl_in_vessel_3/</guid>
+      <description>Introduction to guide-wire control for PCI by RL (3) - How to apply RL</description>
+    </item>
     
     <item>
       <title>강화학습의 혈관 속 탐험 (2) - 강화학습과 제어 이론의 비교</title>
@@ -36,6 +45,15 @@
       
       <guid>/post/2019-06-26-policy-invariance-under-reward-transformation_theory-and-application-to-reward-shaping/</guid>
       <description>Reward shaping method to assure policy invaraiance in RL</description>
+    </item>
+    
+    <item>
+      <title></title>
+      <link>/author/kyunghwan-kim/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/author/kyunghwan-kim/</guid>
+      <description></description>
     </item>
     
   </channel>

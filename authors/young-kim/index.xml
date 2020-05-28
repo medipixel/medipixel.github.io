@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>young-kim on Medipixel</title>
@@ -36,6 +36,15 @@
       
       <guid>/post/2019-05-31-histogram/</guid>
       <description>Histogram using OpenCV</description>
+    </item>
+    
+    <item>
+      <title></title>
+      <link>/author/young-kim/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/author/young-kim/</guid>
+      <description></description>
     </item>
     
   </channel>
