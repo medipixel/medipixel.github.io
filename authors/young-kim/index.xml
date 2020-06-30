@@ -6,10 +6,37 @@
     <description>Recent content in young-kim on Medipixel</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 14 Jun 2019 13:15:00 +0900</lastBuildDate>
+    <lastBuildDate>Tue, 30 Jun 2020 10:20:00 +0900</lastBuildDate>
     
 	<atom:link href="/authors/young-kim/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>[Tutorial] Multi-scale</title>
+      <link>/post/2020-06-30-multi_scale/</link>
+      <pubDate>Tue, 30 Jun 2020 10:20:00 +0900</pubDate>
+      
+      <guid>/post/2020-06-30-multi_scale/</guid>
+      <description>Handling multi-scale images using OpenCV</description>
+    </item>
+    
+    <item>
+      <title>[Tutorial] Morphology</title>
+      <link>/post/2020-06-30-morphology/</link>
+      <pubDate>Tue, 30 Jun 2020 10:10:00 +0900</pubDate>
+      
+      <guid>/post/2020-06-30-morphology/</guid>
+      <description>Morphology Operations using OpenCV</description>
+    </item>
+    
+    <item>
+      <title>[Tutorial] Basic Image Operation</title>
+      <link>/post/2020-06-30-basic_image_operation/</link>
+      <pubDate>Tue, 30 Jun 2020 10:00:00 +0900</pubDate>
+      
+      <guid>/post/2020-06-30-basic_image_operation/</guid>
+      <description>Image Operations using OpenCV</description>
+    </item>
     
     <item>
       <title>[Tutorial] Anchor</title>

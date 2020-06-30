@@ -1,0 +1,1292 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="generator" content="Source Themes Academic 4.3.0">
+
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+  
+  
+    
+  
+  <meta name="description" content="Image Operations using OpenCV">
+
+  
+  <link rel="alternate" hreflang="en-us" href="/post/2020-06-30-basic_image_operation/">
+
+  
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+  
+  <meta name="theme-color" content="#3f51b5">
+  
+
+  
+  
+  
+  
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/academicons/1.8.6/css/academicons.min.css" integrity="sha256-uFVgMKfistnJAfoCUQigIl+JfUaP47GrRKjf6CTPVmw=" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.0/css/all.css" integrity="sha384-aOkxzJ5uQz7WBObEZcHvV5JvRW3TUc2rNPA7pe3AwnsUohiw1Vj2Rgx2KSOkF5+h" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.css" integrity="sha256-ygkqlh3CYSUri3LhQxzdcm0n1EQvH2Y+U5S2idbLtxs=" crossorigin="anonymous">
+
+    
+    
+    
+      
+    
+    
+      
+      
+        
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/github.min.css" crossorigin="anonymous" title="hl-light">
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/dracula.min.css" crossorigin="anonymous" title="hl-dark" disabled>
+        
+      
+    
+
+    
+
+    
+
+  
+
+  
+  
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Montserrat:400,700|Roboto:400,400italic,700|Roboto+Mono">
+  
+
+  
+  
+  
+  <link rel="stylesheet" href="/css/academic.min.4fc3a454da211fdddd30085a99421de1.css">
+
+  
+
+  
+  
+    <script>
+      window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+      ga('create', 'UA-153209244-1', 'auto');
+      
+      ga('require', 'eventTracker');
+      ga('require', 'outboundLinkTracker');
+      ga('require', 'urlChangeTracker');
+      ga('send', 'pageview');
+    </script>
+    <script async src="//www.google-analytics.com/analytics.js"></script>
+    
+    <script async src="https://cdnjs.cloudflare.com/ajax/libs/autotrack/2.4.1/autotrack.js" integrity="sha512-HUmooslVKj4m6OBu0OgzjXXr+QuFYy/k7eLI5jdeEy/F4RSgMn6XRWRGkFi5IFaFgy7uFTkegp3Z0XnJf3Jq+g==" crossorigin="anonymous"></script>
+    
+  
+  
+
+  
+
+  <link rel="manifest" href="/site.webmanifest">
+  <link rel="icon" type="image/png" href="/img/icon.png">
+  <link rel="apple-touch-icon" type="image/png" href="/img/icon-192.png">
+
+  <link rel="canonical" href="/post/2020-06-30-basic_image_operation/">
+
+  
+  
+  
+  
+    
+    
+  
+  <meta property="twitter:card" content="summary">
+  
+  <meta property="og:site_name" content="Medipixel">
+  <meta property="og:url" content="/post/2020-06-30-basic_image_operation/">
+  <meta property="og:title" content="[Tutorial] Basic Image Operation | Medipixel">
+  <meta property="og:description" content="Image Operations using OpenCV"><meta property="og:image" content="/img/icon-192.png">
+  <meta property="og:locale" content="en-us">
+  
+  <meta property="article:published_time" content="2020-06-30T10:00:00&#43;09:00">
+  
+  <meta property="article:modified_time" content="2020-06-30T10:00:00&#43;09:00">
+  
+
+  
+
+  
+
+  <title>[Tutorial] Basic Image Operation | Medipixel</title>
+
+</head>
+<body id="top" data-spy="scroll" data-target="#TableOfContents" data-offset="71" >
+  <aside class="search-results" id="search">
+  <div class="container">
+    <section class="search-header">
+
+      <div class="row no-gutters justify-content-between mb-3">
+        <div class="col-6">
+          <h1>Search</h1>
+        </div>
+        <div class="col-6 col-search-close">
+          <a class="js-search" href="#"><i class="fas fa-times-circle text-muted" aria-hidden="true"></i></a>
+        </div>
+      </div>
+
+      <div id="search-box">
+        
+        <input name="q" id="search-query" placeholder="Search..." autocapitalize="off"
+        autocomplete="off" autocorrect="off" role="textbox" spellcheck="false" type="search">
+        
+      </div>
+
+    </section>
+    <section class="section-search-results">
+
+      <div id="search-hits">
+        
+      </div>
+
+    </section>
+  </div>
+</aside>
+
+
+
+<nav class="navbar navbar-light fixed-top navbar-expand-lg py-0" id="navbar-main">
+  <div class="container">
+
+    
+      <a class="navbar-brand" href="/">Medipixel</a>
+      
+      <button type="button" class="navbar-toggler" data-toggle="collapse"
+              data-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+        <span><i class="fas fa-bars"></i></span>
+      </button>
+      
+
+    
+    <div class="collapse navbar-collapse" id="navbar">
+
+      
+      
+      <ul class="navbar-nav mr-auto">
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+        
+        
+        
+        
+        
+          
+          
+          
+            
+          
+          
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/#posts">
+            
+            <span>Posts</span>
+            
+          </a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+        
+        
+        
+        
+        
+          
+          
+          
+            
+          
+          
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/#contact">
+            
+            <span>Contact</span>
+            
+          </a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+
+        
+        
+        
+        
+        
+        
+
+        <li class="nav-item">
+          <a class="nav-link  active" href="/">
+            
+            <span></span>
+            
+          </a>
+        </li>
+
+        
+        
+
+      
+      </ul>
+      <ul class="navbar-nav ml-auto">
+      
+
+        
+
+        
+        <li class="nav-item">
+          <a class="nav-link js-search" href="#"><i class="fas fa-search" aria-hidden="true"></i></a>
+        </li>
+        
+
+        
+
+        
+        <li class="nav-item">
+          <a class="nav-link js-dark-toggle" href="#"><i class="fas fa-moon" aria-hidden="true"></i></a>
+        </li>
+        
+
+      </ul>
+
+    </div>
+  </div>
+</nav>
+
+
+<article class="article" itemscope itemtype="http://schema.org/Article">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+  
+  
+<div class="article-container pt-3">
+  <h1 itemprop="name">[Tutorial] Basic Image Operation</h1>
+
+  
+
+  
+    
+
+
+
+<meta content="2020-06-30 10:00:00 &#43;0900 KST" itemprop="datePublished">
+<meta content="2020-06-30 10:00:00 &#43;0900 KST" itemprop="dateModified">
+
+<div class="article-metadata">
+
+  
+  
+  
+  
+  <div>
+    
+
+
+
+  <span itemprop="author name" itemtype="http://schema.org/Person"><a href="/authors/young-kim/">young-kim</a></span>, <span itemprop="author name" itemtype="http://schema.org/Person"><a href="/authors/whi-kwon/">whi-kwon</a></span>
+
+  </div>
+  
+  
+
+  
+  <span class="article-date">
+    
+    
+      
+    
+    <time>Jun 30, 2020</time>
+  </span>
+  
+
+  
+
+  
+  <span class="middot-divider"></span>
+  <span class="article-reading-time">
+    7 min read
+  </span>
+  
+
+  
+  
+
+  
+  
+
+  
+    
+<div class="share-box" aria-hidden="true">
+  <ul class="share">
+    <li>
+      <a class="twitter"
+         href="https://twitter.com/intent/tweet?text=&amp;url="
+         target="_blank" rel="noopener">
+        <i class="fab fa-twitter"></i>
+      </a>
+    </li>
+    <li>
+      <a class="facebook"
+         href="https://www.facebook.com/sharer.php?u="
+         target="_blank" rel="noopener">
+        <i class="fab fa-facebook-f"></i>
+      </a>
+    </li>
+    <li>
+      <a class="linkedin"
+         href="https://www.linkedin.com/shareArticle?mini=true&amp;url=&amp;title="
+         target="_blank" rel="noopener">
+        <i class="fab fa-linkedin-in"></i>
+      </a>
+    </li>
+    <li>
+      <a class="weibo"
+         href="http://service.weibo.com/share/share.php?url=&amp;title="
+         target="_blank" rel="noopener">
+        <i class="fab fa-weibo"></i>
+      </a>
+    </li>
+    <li>
+      <a class="email"
+         href="mailto:?subject=&amp;body=">
+        <i class="fas fa-envelope"></i>
+      </a>
+    </li>
+  </ul>
+</div>
+
+
+  
+
+</div>
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+</div>
+
+
+
+  <div class="article-container">
+
+    <div class="article-style" itemprop="articleBody">
+      
+
+<h2 id="basic-image-operation">Basic image operation</h2>
+
+<hr />
+
+<ul>
+<li>이번 장 에서는 이미지에 다양한 효과를 줄 수 있는 이미지 연산 방법에 대하여 알아보겠습니다.</li>
+<li>이미지로 할 수 있는 기본 연산을 총 네 가지로 나누어서 설명하겠습니다. 각각의 기본 연산들을 조합해서 훨씬 더 많은 효과를 낼 수 있습니다.</li>
+<li>네 가지 기본 연산은 아래와 같습니다.
+
+<ul>
+<li><a href="#dotnbspoperation">Dot Operation</a></li>
+<li><a href="#areanbspoperation">Area Operation</a></li>
+<li><a href="#geometricnbspoperation">Geometric Operation</a></li>
+<li><a href="#interpolation">Interpolation</a></li>
+</ul></li>
+</ul>
+
+<h3 id="import-libraries">Import Libraries</h3>
+
+<pre><code class="language-python">import os
+import sys
+import math
+from platform import python_version
+
+import cv2
+import matplotlib.pyplot as plt
+import matplotlib
+
+import numpy as np
+
+print(&quot;Python version : &quot;, python_version())
+print(&quot;Opencv version : &quot;, cv2.__version__)
+matplotlib.rcParams['figure.figsize'] = (4.0, 4.0)
+</code></pre>
+
+<pre><code>Python version :  3.6.9
+Opencv version :  4.1.2
+</code></pre>
+
+<h3 id="data-load">Data load</h3>
+
+<pre><code class="language-python">sample_image_path = '../image/'
+sample_image = 'kitten.jpg'
+img = cv2.imread(os.path.join(sample_image_path, sample_image), cv2.IMREAD_GRAYSCALE)
+h, w = img.shape
+</code></pre>
+
+<h3 id="data-description">Data description</h3>
+
+<ul>
+<li>본 예제에서 사용할 데이터는 아래와 같습니다.
+
+<ul>
+<li>귀여운 아기 고양이 입니다<a href="https://patch.com/maryland/annearundel/free-cat-kitten-adoptions-anne-arundel" target="_blank">[7]</a>.</li>
+</ul></li>
+</ul>
+
+<pre><code class="language-python">plt.imshow(img, cmap='gray')
+plt.title('Kitten')
+plt.show()
+</code></pre>
+
+
+
+
+  
+
+<figure>
+
+<img src="/img/opencv/2.4/2019-12-16-Basic_Image_Operation_6.png" />
+
+
+</figure>
+
+<h2 id="dot-nbsp-operation">Dot&nbsp;operation</h2>
+
+<hr />
+
+<ul>
+<li>Dot Operation이란, Source Image의 Pixel과 Target Image의 Pixel간의 1:1 연산을 말합니다.</li>
+<li>이것을 수식으로는 아래와 같이 표현할 수도 있습니다.
+
+<ul>
+<li>$pixel(i, j)_{after} = f(pixel(i, j)_{before})$</li>
+<li>여기에서 다시 함수 $f$에 따라 <strong>Affine</strong><a href="https://en.wikipedia.org/wiki/Affine_transformation" target="_blank">[2]</a> , <strong>Gamma</strong><a href="https://en.wikipedia.org/wiki/Gamma_correction" target="_blank">[3]</a> 연산으로 나눌 수 있습니다.</li>
+</ul></li>
+<li>아래 코드는 몇 가지 Affine Operation 예시 입니다.</li>
+</ul>
+
+<pre><code class="language-python">bright_img = img + 50
+bright_img[img &gt; 155] = 255
+dark_img = img - 50
+dark_img[img &lt; 100] = 0
+reverse_img = 255 - img
+
+plt.figure(figsize=(8, 8))
+plt.subplot(2, 2, 1)
+plt.imshow(img, cmap='gray')
+plt.title('Gray Kitten')
+
+plt.subplot(2, 2, 2)
+plt.imshow(bright_img, cmap='gray')
+plt.title('Bright Kitten')
+
+plt.subplot(2, 2, 3)
+plt.imshow(dark_img, cmap='gray')
+plt.title('Dark Kitten')
+
+plt.subplot(2, 2, 4)
+plt.imshow(reverse_img, cmap='gray')
+plt.title('Reversed Kitten')
+
+plt.suptitle('Kitten with affine transform.', size=15)
+plt.show()
+</code></pre>
+
+
+
+
+  
+
+<figure>
+
+<img src="/img/opencv/2.4/2019-12-16-Basic_Image_Operation_10.png" />
+
+
+</figure>
+
+<ul>
+<li>아래 코드는 Gamma Correlation Operation 예시 입니다.</li>
+</ul>
+
+<pre><code class="language-python">bright_gamma = 0.5
+dark_gamma = 1.5
+bright_gamma_image = np.uint8(255 * np.power(img / 255, bright_gamma))
+dark_gamma_image = np.uint8(255 * np.power(img / 255, dark_gamma))
+
+plt.figure(figsize=(8, 8))
+plt.subplot(2, 2, 1)
+plt.imshow(img, cmap='gray')
+plt.title('Gray Kitten')
+
+plt.subplot(2, 2, 3)
+plt.imshow(bright_gamma_image, cmap='gray')
+plt.title('Gamma Bright Kitten')
+
+plt.subplot(2, 2, 4)
+plt.imshow(dark_gamma_image, cmap='gray')
+plt.title('Gamma Dark Kitten')
+
+plt.suptitle('Kitten with gamma correlation transform.', size=15)
+plt.show()
+</code></pre>
+
+
+
+
+  
+
+<figure>
+
+<img src="/img/opencv/2.4/2019-12-16-Basic_Image_Operation_12.png" />
+
+
+</figure>
+
+<ul>
+<li>Gamma Correlation Transform과 Affine Transform이 각각 Image에 끼치는 영향이 어떤 차이가 있을까요?</li>
+<li>변환된 각 Image의 Histogram을 확인해보면 차이를 확실히 알 수 있습니다.</li>
+</ul>
+
+<pre><code class="language-python">def histogram_cv(img):
+    h, w = img.shape[:2]
+    hist = cv2.calcHist([img], [0], None, [256], [0, 256])
+    hist = hist / (h * w)
+    return hist
+</code></pre>
+
+<pre><code class="language-python">plt.figure(figsize=(12, 8))
+
+plt.subplot(2, 3, 1)
+plt.imshow(img, cmap='gray')
+plt.title('Kitten')
+
+plt.subplot(2, 3, 2)
+plt.imshow(bright_img, cmap='gray')
+plt.title('Affine bright Kitten')
+
+plt.subplot(2, 3, 3)
+plt.imshow(bright_gamma_image, cmap='gray')
+plt.title('Gamma bright Kitten ')
+
+plt.subplot(2, 3, 4)
+plt.plot(histogram_cv(img))
+plt.title('Kitten Histogram')
+
+plt.subplot(2, 3, 5)
+plt.plot(histogram_cv(bright_img))
+plt.title('Affine bright Kitten Histogram')
+
+plt.subplot(2, 3, 6)
+plt.plot(histogram_cv(bright_gamma_image))
+plt.title('Gamma bright Kitten Histogram')
+
+plt.suptitle('Histogram comparison', size=15)
+plt.show()
+</code></pre>
+
+
+
+
+  
+
+<figure>
+
+<img src="/img/opencv/2.4/2019-12-16-Basic_Image_Operation_15.png" />
+
+
+</figure>
+
+<ul>
+<li>원래 Image와 변환된 Image들의 Histogram 입니다.</li>
+<li>Affine 변환의 경우 픽셀값에 상수를 더하여 밝게 만들고, 픽셀값의 최대치인 255에 도달하면 그냥 255에 놔두는 반면,</li>
+<li>Gamma Correlation 변환의 경우 히스토그램의 분포 형태를 어느 정도 유지하며 밝아지는 모습을 확인할 수 있습니다.
+
+<ul>
+<li>이 두 연산의 차이는 그림과 히스토그램을 같이 볼 때 더 크게 체감이 됩니다. Affine Operation을 적용한 경우, 가장 밝은 부분부터 뭉개지는 듯한 모습인 반면, Gamma Operation을 적용할 경우 원래 형태를 유지하며 밝아지는 모습입니다.</li>
+</ul></li>
+</ul>
+
+<h2 id="area-nbsp-operation">Area&nbsp;operation</h2>
+
+<hr />
+
+<ul>
+<li>Area Operation이란, Target Image의 한 Pixel값을 결정하기 위해 Source Image의 여러 개의 Pixel값을 필요로 하는 연산을 말합니다.</li>
+<li>Source Image의 여러 Pixel값들에 특정 가중치를 부여하고, Source Image와 가중치의 곱의 합을 구하여 Target Image를 구하는 방법이 일반적 입니다.
+
+<ul>
+<li>여기에서 특정 가중치를 구할 때, 일정한 크기의 Mask에만 유효한 값을 부여하고 나머지 영역에는 0을 부여하곤 합니다.</li>
+<li>이러한 연산을 Correlation, 혹은 Convolution이라고 합니다.
+
+<ul>
+<li>Correlation과 Convolution은 엄밀히 말하면 서로 다른 연산이나, Image Processing의 특성상 <em>거의 같은</em> 연산인 것으로 생각하고 넘어가겠습니다.</li>
+</ul></li>
+</ul></li>
+<li>OpenCV에서 <strong>&lsquo;cv2.filter2D()&rsquo;</strong> 를 통해 쉽게 적용할 수 있고, 몇몇 자주 쓰이거나 특별한 연산의 경우 따로 정의된 함수가 존재하기도 합니다.
+
+<ul>
+<li>(e.g)Median Filter<a href="https://en.wikipedia.org/wiki/Median_filter" target="_blank">[4]</a> 는 <strong>&lsquo;cv2.medianBlur(img,kernel)&rsquo;</strong> 을 통해 제공되는데, 엣지 정보를 잘 남겨두면서 노이즈를 제거하는 방법으로 알려져 있습니다.</li>
+</ul></li>
+<li>어떠한 Mask를 사용하느냐에 따라 결과 영상의 특성이 천차 만별로 달라질 수 있습니다.
+
+<ul>
+<li>아래 예시중 수평, 수직방향 Edge를 각각 구한 결과가 있습니다. 예시에서 사용된 Mask가 Sobel Filter의 초기 모델이며, Edge Detection에서 자세히 다루겠습니다.</li>
+<li>Sharpen이라는 기법은 물체의 Edge를 강하게 드러내는 방법중 하나 입니다.</li>
+<li>위 연산들은 앞서 말했다시피 완전히 다른 결과를 만들지만, 적용하는 Mask만 다를 뿐 같은 함수 호출을 통해 만들어낸 결과임을 주목합시다.</li>
+</ul></li>
+</ul>
+
+<pre><code class="language-python">blur_mask = np.ones((3, 3), dtype=np.uint8) / 9
+horiz_edge_mask = np.array([[1, 1, 1],
+                            [0, 0, 0],
+                            [-1, -1, -1]])
+vert_edge_mask = np.array([[1, 0, -1],
+                           [1, 0, -1],
+                           [1, 0, -1]])
+sharp_mask = np.array([[0, -1, 0],
+                      [-1, 5, -1],
+                      [0, -1, 0]])
+
+dst1 = cv2.filter2D(img, -1, blur_mask)
+dst2 = cv2.filter2D(img, -1, horiz_edge_mask)
+dst3 = cv2.filter2D(img, -1, vert_edge_mask)
+dst4 = cv2.filter2D(img, -1, sharp_mask)
+dst4_blur = cv2.medianBlur(dst4, 3)
+
+plt.figure(figsize=(12,8))
+plt.subplot(231)
+plt.imshow(dst1, cmap='gray')
+plt.title('Blurring')
+
+plt.subplot(232)
+plt.imshow(dst4, cmap='gray')
+plt.title('Sharpen')
+
+plt.subplot(233)
+plt.imshow(dst4_blur, cmap='gray')
+plt.title('Sharpen with Median')
+
+plt.subplot(234)
+plt.imshow(dst2, cmap='gray')
+plt.title('Horizontal edge')
+
+plt.subplot(235)
+plt.imshow(dst3, cmap='gray')
+plt.title('Vertical edge')
+
+plt.suptitle('Kitten with different operation', size=15)
+plt.show()
+</code></pre>
+
+
+
+
+  
+
+<figure>
+
+<img src="/img/opencv/2.4/2019-12-16-Basic_Image_Operation_18.png" />
+
+
+</figure>
+
+<h2 id="geometric-nbsp-operation">Geometric&nbsp;operation</h2>
+
+<hr />
+
+<ul>
+<li>세 번째 Geometric Operation은 영상에 이동, 크기, 회전, 기울임 등의 효과를 주는 것을 말합니다.</li>
+<li>물체의 기하학적 특징이 <strong>탄력적으로</strong> 보존되는 변환입니다.
+
+<ul>
+<li>찢거나 구기거나 흐릿하게 만들거나 하지 않고, 눈 두개 사이에 코가 있다는 등의 특성이 기울어지든, 회전하든 그대로 유지된다는 의미로 받아들이시면 됩니다.</li>
+</ul></li>
+<li>4가지 기본적인 연산을 순차적으로 조합하여 수 많은 변환을 수행할 수 있습니다<a href="https://en.wikipedia.org/wiki/Denavit%E2%80%93Hartenberg_parameters" target="_blank">[5]</a>.
+
+<ul>
+<li>e.g. 특정 점을 기준으로 회전, 좌우 반전(Flip), 시점 변환(Perspective transform) 등</li>
+</ul></li>
+<li>OpenCV에서 지원하는 <strong>&lsquo;cv2.getAffineTransform()&rsquo;</strong>, <strong>&lsquo;cv2.warpAffine()&rsquo;</strong> 함수를 통해 Geometric Operation을 적용할 수 있습니다.
+
+<ul>
+<li>여기에서 함수 이름에 들어가는 Affine 때문에 헷갈리는 경우가 있을 수 있을 것 같습니다.</li>
+<li>Dot Operation에서 소개한 Affine Operation은 개별 픽셀값 하나에 대한 Affine연산이며, 여기에서 나온 Affine의 의미는 Image의 전체 픽셀들에 대하여 지역적으로 적용하는 Affine 연산입니다.</li>
+<li>이 둘의 차이는, 어떤 픽셀에 대하여 그 &lsquo;값&rsquo;을 바꾸느냐, 혹은 그 &lsquo;위치&rsquo;를 바꾸느냐에 따라 나뉘는 것으로 생각하시면 되겠습니다.</li>
+</ul></li>
+</ul>
+
+<pre><code class="language-python">pts1 = np.float32([[50, 50], [200, 50], [50, 200]])
+pts2 = np.float32([[10, 100], [200, 50], [100, 250]])
+
+M = cv2.getAffineTransform(pts1, pts2)
+dst1 = cv2.warpAffine(img, M, (w, h))
+
+M = cv2.getRotationMatrix2D((w / 2, h / 2), -30, 1)
+dst2 = cv2.warpAffine(img, M, (w, h))
+
+plt.figure(figsize=(12, 4))
+plt.subplot(1, 3, 1)
+plt.imshow(img, cmap='gray')
+plt.title('Input')
+
+plt.subplot(1, 3, 2)
+plt.imshow(dst1, cmap='gray')
+plt.title('Affine')
+
+plt.subplot(1, 3, 3)
+plt.imshow(dst2, cmap='gray')
+plt.title('Rotation')
+
+plt.suptitle('Lena with geometric transform')
+plt.show()
+</code></pre>
+
+
+
+
+  
+
+<figure>
+
+<img src="/img/opencv/2.4/2019-12-16-Basic_Image_Operation_20.png" />
+
+
+</figure>
+
+<ul>
+<li>간단하게 고양이 Image를 뒤틀고, 회전시켜본 예시입니다.</li>
+<li>각 함수의 자세한 사용법은 OpenCV 공식 문서<a href="https://docs.opencv.org/2.4/modules/imgproc/doc/geometric_transformations.html" target="_blank">[6]</a>에서 확인할 수 있습니다.</li>
+</ul>
+
+<h2 id="interpolation">Interpolation</h2>
+
+<hr />
+
+<ul>
+<li>Image의 크기를 바꾸는 경우(특히 확대할 때), 원본 Image의 픽셀과 픽셀 사이에 새로운 값이 생성되는 것이므로 이 새로운 값을 어떻게 채워야 할 지에 대한 문제가 발생하게 됩니다.</li>
+<li>단순하게 한 쪽 픽셀 값을 그대로 가져다가 적용할 경우 영상이 실질적으로 해상도가 커지는 것이 아니라, 단순히 크기만 키우는 것 이라고 볼 수 있습니다.</li>
+<li>이와 반대로 (머신러닝 등의 방법 없이)더 좋은 해상도의 Image를 얻기 위하여 Interpolation을 사용합니다.</li>
+<li>OpenCV는 다양한 Interpolation(보간법)을 제공하는데, <strong>&lsquo;cv2.resize()&rsquo;</strong>  함수의 인자 &lsquo;interpolation&rsquo; 으로 조절할 수 있습니다.
+
+<ul>
+<li><em>&lsquo;cv2.INTER_NEAREST&rsquo;</em> - 최근접 이웃 픽셀의 값을 사용함. (size의 단순한 확대)</li>
+<li><em>&lsquo;cv2.INTER_LINEAR&rsquo;</em> - 양 선형 보간 (default 값)</li>
+<li><em>&lsquo;cv2.INTER_AREA&rsquo;</em> - 영역의 넓이에 기반한 방법. (사이즈를 줄일 때 좋은 성능)</li>
+<li><em>&lsquo;cv2.INTER_CUBIC&rsquo;</em> - 양 3차 보간 : 양 선형 보간법 보다 4배 많은 정보를 활용.</li>
+<li><em>&lsquo;cv2.INTER_LANCZOS4&rsquo;</em> - Lanczos 보간 : 양 3차 보간법 보다 4배 많은 정보를 활용.</li>
+</ul></li>
+</ul>
+
+<pre><code class="language-python">h, w = [int(x) for x in img.shape]
+
+face_img = img[h // 2 - 60 : h // 2 + 80, w // 2 - 110 : w // 2 + 30]
+
+h, w = [int (x) for x in face_img.shape]
+
+dst3 = np.zeros([h * 2, w * 2])
+for i in range(h):
+    for j in range(w):
+        dst3[2 * i, 2 * j] = face_img[i, j]
+        dst3[2 * i + 1, 2 * j + 1] = face_img[i, j]
+        dst3[2 * i, 2 * j + 1] = face_img[i, j]
+        dst3[2 * i + 1, 2 * j] = face_img[i, j]
+
+dst4 = cv2.resize(face_img, (w * 2, h * 2))
+dst5 = cv2.resize(face_img, (w * 2, h * 2), interpolation=cv2.INTER_CUBIC)
+dst6 = cv2.resize(face_img, (w * 2, h * 2), interpolation=cv2.INTER_LANCZOS4)
+
+plt.figure(figsize=(4, 4))
+plt.imshow(face_img, cmap='gray')
+plt.title('original')
+
+plt.show()
+</code></pre>
+
+
+
+
+  
+
+<figure>
+
+<img src="/img/opencv/2.4/2019-12-16-Basic_Image_Operation_23.png" />
+
+
+</figure>
+
+<pre><code class="language-python">plt.figure(figsize=(16, 16))
+plt.subplot(2, 2, 1)
+plt.imshow(dst3, cmap='gray')
+plt.title('resize manual')
+
+plt.subplot(2, 2, 2)
+plt.imshow(dst4, cmap='gray')
+plt.title('resize bilinear')
+
+plt.subplot(2, 2, 3)
+plt.imshow(dst5, cmap='gray')
+plt.title('resize cubic')
+
+plt.subplot(2, 2, 4)
+plt.imshow(dst6, cmap='gray')
+plt.title('resize lanczos4')
+plt.show()
+</code></pre>
+
+
+
+
+  
+
+<figure>
+
+<img src="/img/opencv/2.4/2019-12-16-Basic_Image_Operation_24.png" />
+
+
+</figure>
+
+<ul>
+<li>아기 고양이의 얼굴만 확대한 Image를 통해 Interpolation 방법에 따른 Image 품질 차이를 확인해보겠습니다.</li>
+<li>Manual Resize된 Image와 Interpolation이 적용된 Image와의 품질 차이는 확실히 드러납니다.</li>
+<li>나머지 Interpolation이 적용된 Image들의 품질을 여러분의 눈으로는 확인 가능하신가요? 자세히 보시면 보일겁니다.
+
+<ul>
+<li>Bilinear Interpolation은 새로운 픽셀의 값을 계산할 때 양 옆의 두 픽셀만을 고려하기 때문에 계산량이 다소 적은 편 입니다.</li>
+<li>Cubic, Lanczos4 등의 방법론은 더 많은 주변 픽셀들을 고려하기 때문에 일반적으로 Bilinear보다 더 높은 품질의 결과물을 보여줍니다.</li>
+<li>연산 효율이 중요할 경우에는 bilinear interpolation을, 결과물의 품질이 중요한 경우에는 Cubic이나 Lanczos4중에서 선택하시면 됩니다.</li>
+</ul></li>
+</ul>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<hr />
+
+<ul>
+<li>Image에 적용하는 기본 연산들을 알아보았습니다.</li>
+<li>원하는 효과를 내기 위해 다양한 방식으로 연산을 조합해서 눈으로 직접 확인해보시면 많은 도움이 될 것 입니다.</li>
+</ul>
+
+<h2 id="reference">Reference</h2>
+
+<hr />
+
+<ul>
+<li>[1] 오일석, &ldquo;영상 처리의 세 가지 기본 연산,&rdquo; in 컴퓨터 비전, vol.4, Republic of Korea:한빛아카데미, 2014, pp. 76-92</li>
+<li>[2] Accessed: &lsquo;Affine transformation&rsquo;, Wikipedia. 2019 [Online]. Available: <a href="https://en.wikipedia.org/wiki/Affine_transformation" target="_blank">https://en.wikipedia.org/wiki/Affine_transformation</a></li>
+<li>[3] Accessed: &lsquo;Gamma correction&rsquo;, Wikipedia. 2019 [Online]. Available: <a href="https://en.wikipedia.org/wiki/Gamma_correction" target="_blank">https://en.wikipedia.org/wiki/Gamma_correction</a></li>
+<li>[4] Accessed: &lsquo;Median filter&rsquo;, Wikipedia. 2019 [Online]. Available: <a href="https://en.wikipedia.org/wiki/Median_filter" target="_blank">https://en.wikipedia.org/wiki/Median_filter</a></li>
+<li>[5] Accessed: &lsquo;Denavit–Hartenberg parameters&rsquo;, Wikipedia. 2019 [Online]. Available: <a href="https://en.wikipedia.org/wiki/Denavit%E2%80%93Hartenberg_parameters" target="_blank">https://en.wikipedia.org/wiki/Denavit%E2%80%93Hartenberg_parameters</a></li>
+<li>[6] Accessed: &lsquo;Geometric Image Transformations&rsquo;, &lsquo;OpenCV 2.4.13.7 documentation&rsquo;. 2019 [Online]. Available: <a href="https://docs.opencv.org/2.4/modules/imgproc/doc/geometric_transformations.html" target="_blank">https://docs.opencv.org/2.4/modules/imgproc/doc/geometric_transformations.html</a></li>
+<li>[7] Accessed: &lsquo;Free Cat, Kitten Adoptions In Anne Arundel&rsquo;, Patch. 2018 [Online]. Available: <a href="https://patch.com/maryland/annearundel/free-cat-kitten-adoptions-anne-arundel" target="_blank">https://patch.com/maryland/annearundel/free-cat-kitten-adoptions-anne-arundel</a></li>
+</ul>
+
+    </div>
+
+    
+
+
+
+    
+      
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+  
+
+
+
+
+
+
+	
+	
+	
+	
+	
+	<div class="media author-card" itemscope itemtype="http://schema.org/Person">
+	  
+	  
+	  <img class="portrait mr-3" src="/author/young-kim/avatar_hu52a603635ecebd45650b162dadabb4e5_12861_250x250_fill_q90_lanczos_center.jpg" itemprop="image" alt="Avatar">
+	  
+	  <div class="media-body">
+	    <h5 class="card-title" itemprop="name"><a href="/authors/young-kim">YoungEon Kim</a></h5>
+	    <h6 class="card-subtitle">AI Scientist</h6>
+	    
+	    <ul class="network-icon" aria-hidden="true">
+	      
+	      
+	      
+	      
+		
+	      
+	      
+	      
+	      
+	      
+	      <li>
+		<a itemprop="sameAs" href="mailto:young.kim@medipixel.io" >
+		  <i class="fas fa-envelope"></i>
+		</a>
+	      </li>
+	      
+	      
+	      
+	      
+		
+	      
+	      
+	      
+	      
+	      
+		
+	      
+	      <li>
+		<a itemprop="sameAs" href="https://twitter.com/kye9216789" target="_blank" rel="noopener">
+		  <i class="fab fa-twitter"></i>
+		</a>
+	      </li>
+	      
+	      
+	      
+	      
+		
+	      
+	      
+	      
+	      
+	      
+		
+	      
+	      <li>
+		<a itemprop="sameAs" href="https://github.com/kye9216789" target="_blank" rel="noopener">
+		  <i class="fab fa-github"></i>
+		</a>
+	      </li>
+	      
+	    </ul>
+	  </div>
+	</div>
+	
+	
+
+
+
+	
+	
+	
+	
+	
+	<div class="media author-card" itemscope itemtype="http://schema.org/Person">
+	  
+	  
+	  <img class="portrait mr-3" src="/author/whi-kwon/avatar_hu9f99ec4f5e6ea5840aa975879b10ccd2_87452_250x250_fill_q90_lanczos_center.jpg" itemprop="image" alt="Avatar">
+	  
+	  <div class="media-body">
+	    <h5 class="card-title" itemprop="name"><a href="/authors/whi-kwon">Whi Kwon</a></h5>
+	    <h6 class="card-subtitle">AI Researcher</h6>
+	    
+	    <ul class="network-icon" aria-hidden="true">
+	      
+	      
+	      
+	      
+		
+	      
+	      
+	      
+	      
+	      
+	      <li>
+		<a itemprop="sameAs" href="mailto:whi.kwon@medipixel.io" >
+		  <i class="fas fa-envelope"></i>
+		</a>
+	      </li>
+	      
+	      
+	      
+	      
+		
+	      
+	      
+	      
+	      
+	      
+		
+	      
+	      <li>
+		<a itemprop="sameAs" href="https://github.com/whikwon" target="_blank" rel="noopener">
+		  <i class="fab fa-github"></i>
+		</a>
+	      </li>
+	      
+	    </ul>
+	  </div>
+	</div>
+	
+	
+
+
+      
+      
+    
+
+    
+
+    
+
+
+  </div>
+</article>
+
+<div class="container">
+  <footer class="site-footer">
+  
+
+  <p class="powered-by">
+    
+
+    Powered by the
+    <a href="https://sourcethemes.com/academic/" target="_blank" rel="noopener">Academic theme</a> for
+    <a href="https://gohugo.io" target="_blank" rel="noopener">Hugo</a>.
+
+    
+    <span class="float-right" aria-hidden="true">
+      <a href="#" id="back_to_top">
+        <span class="button_icon">
+          <i class="fas fa-chevron-up fa-2x"></i>
+        </span>
+      </a>
+    </span>
+    
+  </p>
+</footer>
+
+</div>
+
+
+<div id="modal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Cite</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <pre><code class="tex hljs"></code></pre>
+      </div>
+      <div class="modal-footer">
+        <a class="btn btn-outline-primary my-1 js-copy-cite" href="#" target="_blank">
+          <i class="fas fa-copy"></i> Copy
+        </a>
+        <a class="btn btn-outline-primary my-1 js-download-cite" href="#" target="_blank">
+          <i class="fas fa-download"></i> Download
+        </a>
+        <div id="modal-error"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+    
+    
+    <script src="/js/mathjax-config.js"></script>
+    
+
+    
+    
+    
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.imagesloaded/4.1.4/imagesloaded.pkgd.min.js" integrity="sha256-lqvxZrPLtfffUl2G/e7szqSvPBILGbwmsGE1MKlOi0Q=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.isotope/3.0.6/isotope.pkgd.min.js" integrity="sha256-CBrpuqrMhXwcLLUd5tvQ4euBHCdh7wGlDfNz8vbu/iI=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.js" integrity="sha256-X5PoE3KU5l+JcX+w09p/wHl9AzK333C4hJ2I9S5mD4M=" crossorigin="anonymous"></script>
+
+      
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/highlight.min.js" integrity="sha256-aYTdUrn6Ow1DDgh5JTc3aDGnnju48y/1c8s1dgkYPQ8=" crossorigin="anonymous"></script>
+        
+        <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/languages/python.min.js"></script>
+        
+      
+
+      
+      
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS_CHTML-full" integrity="sha256-GhM+5JHb6QUzOQPXSJLEWP7R73CbkisjzK5Eyij4U9w=" crossorigin="anonymous" async></script>
+      
+    
+
+    
+    
+
+    
+    
+    
+
+    
+    
+    <script>hljs.initHighlightingOnLoad();</script>
+    
+
+    
+    
+    <script>
+      const search_index_filename = "/index.json";
+      const i18n = {
+        'placeholder': "Search...",
+        'results': "results found",
+        'no_results': "No results found"
+      };
+      const content_type = {
+        'post': "Posts",
+        'project': "Projects",
+        'publication' : "Publications",
+        'talk' : "Talks"
+        };
+    </script>
+    
+
+    
+    
+
+    
+    
+    <script id="search-hit-fuse-template" type="text/x-template">
+      <div class="search-hit" id="summary-{{key}}">
+      <div class="search-hit-content">
+        <div class="search-hit-name">
+          <a href="{{relpermalink}}">{{title}}</a>
+          <div class="article-metadata search-hit-type">{{type}}</div>
+          <p class="search-hit-description">{{snippet}}</p>
+        </div>
+      </div>
+      </div>
+    </script>
+    
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.1/fuse.min.js" integrity="sha256-VzgmKYmhsGNNN4Ph1kMW+BjoYJM2jV5i4IlFoeZA9XI=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js" integrity="sha256-4HLtjeVgH0eIB3aZ9mLYF6E8oU5chNdjU6p6rrXpl9U=" crossorigin="anonymous"></script>
+    
+
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+      
+    
+    
+    
+    
+    <script src="/js/academic.min.3258b3a711acd6208568ec000de4beec.js"></script>
+
+  </body>
+</html>
+
